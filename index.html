@@ -6,14 +6,42 @@
 
   <title>FisioManager Premium</title>
 
+  <!-- URL do seu backend no Render -->
   <script>
-    window.API_URL = "https://SEU-BACKEND.onrender.com";
+    window.API_URL = "https://fisiomanager-backend.onrender.com";
   </script>
 
+  <!-- CSS principal -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Ícone do app -->
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2966/2966482.png" />
 </head>
+
 <body>
+
+  <!-- ========================== -->
+  <!--      SPLASH SCREEN         -->
+  <!-- ========================== -->
+  <div id="splash">
+    <div class="splash-logo">F</div>
+    <h1 class="splash-title">FisioManager</h1>
+    <p class="splash-sub">Premium</p>
+  </div>
+
+  <!-- ========================== -->
+  <!--        APLICATIVO          -->
+  <!-- ========================== -->
   <div id="app">Carregando...</div>
+
+  <!-- ================================== -->
+  <!--  Chart.js — para gráficos Premium   -->
+  <!-- ================================== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Seu app JS modular -->
   <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
+

@@ -1,21 +1,37 @@
-/* Estilos principais do FisioManager Premium */
+/* ============================
+   GLOBAL
+   ============================ */
 
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
   background: #f3f3f3;
+  font-family: Arial, sans-serif;
+  color: #222;
 }
 
-.app-shell {
-  padding: 10px;
+.content-area {
+  padding: 16px;
+  padding-bottom: 90px;
 }
+
+h2.section-title,
+h3.section-title {
+  font-size: 20px;
+  margin: 15px 0 10px;
+  color: #222;
+}
+
+/* ============================
+   BOTÕES
+   ============================ */
 
 .btn {
-  padding: 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
+  font-size: 15px;
+  width: 100%;
 }
 
 .btn-primary {
@@ -27,3 +43,670 @@ body {
   background: #6c757d;
   color: white;
 }
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn:active { opacity: 0.7; }
+
+/* ============================
+   INPUTS
+   ============================ */
+
+.form-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+input,
+select {
+  font-size: 15px;
+}
+
+/* ============================
+   TABELAS / LISTAS
+   ============================ */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.list-item-title {
+  font-weight: bold;
+}
+
+.list-item-sub {
+  color: #666;
+  font-size: 13px;
+}
+
+/* ============================
+   CARDS (Dashboard, Financeiro)
+   ============================ */
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-bottom: 15px;
+}
+
+.card-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.card-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #111;
+}
+
+/* ============================
+   MENU INFERIOR PREMIUM
+   ============================ */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  box-shadow: 0px -2px 10px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.nav-btn {
+  border: none;
+  background: none;
+  color: #666;
+  font-size: 12px;
+  width: 20%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px 0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.nav-btn .icon {
+  font-size: 22px;
+}
+
+.nav-btn.active {
+  color: #0d6efd;
+  font-weight: bold;
+  transform: scale(1.08);
+}
+
+.nav-btn.active .icon {
+  color: #0d6efd;
+}
+
+/* ============================
+   HEADER PREMIUM
+   ============================ */
+
+.topbar {
+  background: #0d6efd;
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.logout-btn {
+  background: #ffffff33;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ============================
+   LOGIN PREMIUM
+   ============================ */
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  padding: 30px;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+}
+
+.login-logo {
+  width: 70px;
+  height: 70px;
+  background: #0d6efd;
+  color: white;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  font-size: 36px;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.login-title {
+  margin-top: 20px;
+  font-size: 28px;
+  color: #222;
+}
+
+.login-subtitle {
+  margin-top: -5px;
+  font-size: 14px;
+  color: #777;
+}
+
+.login-input {
+  margin-top: 15px;
+  padding: 14px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.login-msg {
+  margin-top: 10px;
+  color: #d00;
+}
+
+/* ============================
+   SPLASH SCREEN PREMIUM
+   ============================ */
+
+#splash {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0d6efd, #2563eb);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 9999;
+  animation: fadeOut 1s ease forwards;
+  animation-delay: 1.5s;
+}
+
+.splash-logo {
+  width: 90px;
+  height: 90px;
+  background: white;
+  color: #0d6efd;
+  border-radius: 50%;
+  display: flex;
+  font-size: 42px;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.splash-title {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.splash-sub {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* ============================
+   PERFIL PREMIUM
+   ============================ */
+
+.perfil-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.perfil-card {
+  background: white;
+  padding: 25px;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.perfil-avatar {
+  width: 100px;
+  height: 100px;
+  background: #0d6efd;
+  color: white;
+  border-radius: 50%;
+  margin: 0 auto;
+  font-size: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfil-nome {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.perfil-email {
+  font-size: 14px;
+  color: #666;
+}
+
+/* ============================
+   CONFIGURAÇÕES PREMIUM
+   ============================ */
+
+.config-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.config-title {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #2563eb;
+}
+
+.config-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* SWITCH */
+.switch {
+  position: relative;
+  width: 46px;
+  height: 22px;
+}
+
+.switch input { display: none; }
+
+.slider {
+  background: #ccc;
+  border-radius: 34px;
+  position: absolute;
+  inset: 0;
+  transition: .3s;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  background: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  left: 3px;
+  bottom: 2px;
+  transition: .3s;
+}
+
+input:checked + .slider {
+  background: #0d6efd;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Dark Mode */
+body.dark {
+  background: #111;
+  color: #ddd;
+}
+
+body.dark .content-area { color: #ddd; }
+body.dark .card,
+body.dark .list-item,
+body.dark .perfil-card,
+body.dark .table {
+  background: #1e1e1e;
+}
+
+/* ============================
+   EVOLUÇÕES PREMIUM
+   ============================ */
+
+.evo-item {
+  display: flex;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  margin-bottom: 12px;
+}
+
+.evo-left {
+  width: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.evo-icon {
+  background: #0d6efd;
+  color: white;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.evo-right {
+  flex: 1;
+  padding-left: 10px;
+}
+
+.evo-title {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: #222;
+}
+
+.evo-date {
+  font-size: 13px;
+  color: #666;
+}
+
+.evo-text {
+  margin-top: 4px;
+  color: #444;
+}
+
+/* MODAL Evolução */
+.evo-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.evo-modal.hidden { display: none; }
+
+.evo-modal-content {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 420px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+.contador {
+  text-align: right;
+  font-size: 12px;
+  color: #777;
+}
+
+/* Floating Button */
+.fab {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: #0d6efd;
+  color: white;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  font-size: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+  cursor: pointer;
+}
+
+.fab:active { opacity: 0.7; }
+
+/* ============================
+   DASHBOARD PREMIUM
+   ============================ */
+
+.dash-cards {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dash-card {
+  flex: 1;
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.dash-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.dash-value {
+  display: block;
+  margin-top: 6px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #111;
+}
+
+.chart-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+/* ============================
+   AGENDA PREMIUM – CALENDÁRIO
+   ============================ */
+
+.calendario {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  margin-bottom: 16px;
+}
+
+.cal-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 4px;
+}
+
+.cal-grid span {
+  font-size: 13px;
+  color: #666;
+}
+
+.cal-dia {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #e6e6e6;
+  cursor: pointer;
+}
+
+.cal-dia.ativo {
+  background: #0d6efd;
+  color: white;
+  font-weight: bold;
+}
+
+.cal-dia:active { opacity: 0.7; }
+
+/* MODAL Agenda */
+.agenda-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.agenda-modal.hidden { display: none; }
+
+.agenda-modal-content {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+/* ============================
+   FINANCEIRO PREMIUM
+   ============================ */
+
+.fin-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fin-card {
+  flex: 1;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.fin-card.green { background: #e8fff4; }
+.fin-card.red { background: #ffe8e8; }
+
+.fin-title {
+  font-size: 14px;
+  color: #555;
+}
+
+.fin-value {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.fin-box {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.fin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.fin-modal.hidden { display: none; }
+
+.fin-modal-content {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+.list-item-sub.receita {
+  color: #0a9a62;
+}
+
+.list-item-sub.despesa {
+  color: #c0392b;
+}
+
