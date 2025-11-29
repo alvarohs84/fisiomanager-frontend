@@ -13,7 +13,7 @@ import { renderEvolucoes } from "../pages/evolucoes.js";
 import { renderHistorico } from "../pages/historico.js";
 import { renderHistoricoPaciente } from "../pages/historico.js";
 import { renderPerfil } from "../pages/perfil.js";
-import { renderConfig } from "../pages/config.js";
+import { renderConfig } from "../pages/configuracoes.js";
 import { renderFinanceiro } from "../pages/financeiro.js";
 
 // ===================================================
