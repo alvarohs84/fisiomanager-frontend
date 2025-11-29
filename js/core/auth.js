@@ -1,50 +1,73 @@
-// ============================
-//  AUTH – TOKEN LOCALSTORAGE
-// ============================
+// ============================================
+//  Autenticação — FisioManager Premium
+// ============================================
 
-export const setToken = (t) => localStorage.setItem("fm_token", t);
-export const getToken = () => localStorage.getItem("fm_token");
-export const clearToken = () => localStorage.removeItem("fm_token");
-export const isLogged = () => !!getToken();
+// URL da API já vem do index.html
+const API = window.API_URL;
 
-
-// ============================
-//  AUTH FETCH – REQUISIÇÕES COM TOKEN
-// ============================
-
-export async function authFetch(path, options = {}) {
-  const token = getToken();
-
-  if (!token) {
-    throw new Error("Usuário não logado");
-  }
-
-  const headers = {
-    ...(options.headers || {}),
-    "Authorization": "Bearer " + token
-  };
-
-  // Só define Content-Type se não for FormData
-  if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  const res = await fetch(window.API_URL + path, {
-    ...options,
-    headers
-  });
-
-  if (!res.ok) {
-    let msg = await res.text();
-    console.error("API error:", msg);
-    throw new Error("Erro ao comunicar com servidor");
-  }
-
-  const type = res.headers.get("content-type") || "";
-
-  if (type.includes("application/json")) {
-    return res.json();
-  } else {
-    return res.text();
-  }
+// --------------------------------------------
+// Retorna usuário logado (ou null)
+// --------------------------------------------
+export function getUser() {
+    const data = localStorage.getItem("user");
+    try {
+        return data ? JSON.parse(data) : null;
+    } catch {
+        return null;
+    }
 }
+
+// --------------------------------------------
+// Verifica se o usuário está logado
+// --------------------------------------------
+export function isLogged() {
+    const token = localStorage.getItem("token");
+    return token !== null;
+}
+
+// --------------------------------------------
+// Faz login na API FastAPI
+// --------------------------------------------
+export async function login(username, password) {
+    try {
+        const response = await fetch(`${API}/token`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Usuário ou senha inválidos");
+        }
+
+        const data = await response.json();
+
+        // Salva o token e o usuário localmente
+        localStorage.setItem("token", data.access_token);
+
+        // Salva o usuário (somente username por enquanto)
+        localStorage.setItem("user", JSON.stringify({ username }));
+
+        return true;
+
+    } catch (error) {
+        console.error("Erro no login:", error);
+        alert(error.message || "Erro ao fazer login");
+        return false;
+    }
+}
+
+// --------------------------------------------
+// Logout — remove tudo e volta ao login
+// --------------------------------------------
+export function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+}
+
+
