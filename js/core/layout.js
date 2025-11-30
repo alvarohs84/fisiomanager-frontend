@@ -2,22 +2,21 @@
 //  FisioManager Premium — LAYOUT.JS
 // ===================================================
 
-import { clearToken, getUser, isLogged } from "./auth.js";
+import { clearToken, getUser } from "./auth.js";
 import { navigate } from "./router.js";
 
 // Atualiza nome do usuário no layout
 export function updateLayoutUser() {
   const user = getUser();
-  const userNameElement = document.getElementById("layoutUser");
+  const el = document.getElementById("layoutUser");
 
-  if (userNameElement) {
-    userNameElement.textContent = user ? user.username : "Visitante";
+  if (el) {
+    el.textContent = user ? user.username : "Visitante";
   }
 }
 
-// Configura botões do layout
+// Eventos do layout
 export function setupLayoutEvents() {
-  // Logout
   const logoutBtn = document.getElementById("logout-btn");
 
   if (logoutBtn) {
@@ -27,16 +26,14 @@ export function setupLayoutEvents() {
     });
   }
 
-  // Links do menu lateral
   document.querySelectorAll("[data-route]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const route = btn.getAttribute("data-route");
-      navigate(route);
+      navigate(btn.dataset.route);
     });
   });
 }
 
-// Renderiza o layout + página interna
+// Renderiza layout + página interna
 export function renderLayout(contentHtml) {
   document.getElementById("app").innerHTML = `
     <div class="layout">
@@ -54,7 +51,7 @@ export function renderLayout(contentHtml) {
         </nav>
 
         <footer>
-          <p id="layoutUser">Usuário</p>
+          <p id="layoutUser"></p>
           <button id="logout-btn">Sair</button>
         </footer>
       </aside>
@@ -68,6 +65,7 @@ export function renderLayout(contentHtml) {
   updateLayoutUser();
   setupLayoutEvents();
 }
+
 
 
 
