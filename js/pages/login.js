@@ -14,18 +14,15 @@ export function renderLogin() {
     </div>
   `;
 
-  document.getElementById("btnLogin").addEventListener("click", async () => {
+  document.getElementById("btnLogin").onclick = async () => {
     const username = document.getElementById("user").value;
     const password = document.getElementById("pass").value;
 
     const ok = await login(username, password);
-
-    if (ok) {
-      navigate("dashboard");  // ⬅ Aqui é o ponto principal!
-    } else {
-      alert("Login inválido");
-    }
-  });
+    if (ok) navigate("dashboard");
+    else alert("Login inválido");
+  };
 }
+
 
 
