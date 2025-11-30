@@ -1,6 +1,4 @@
-// ===================================================
-//  FisioManager — AUTH CORE
-// ===================================================
+// ATUALIZANDO LOGIN AGORA
 
 export function saveToken(token) {
   localStorage.setItem("token", token);
@@ -30,10 +28,17 @@ export function isLogged() {
 
 export async function login(username, password) {
   try {
+    // --- MUDANÇA CRUCIAL: USAR FORM DATA ---
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+
     const res = await fetch(`${window.API_URL}/token`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
+      headers: { 
+        "Content-Type": "application/x-www-form-urlencoded" // <--- O CORRETO
+      },
+      body: formData // <--- ENVIA FORMULÁRIO
     });
 
     if (!res.ok) return false;
@@ -44,6 +49,7 @@ export async function login(username, password) {
 
     return true;
   } catch (e) {
+    console.error("Login error:", e);
     return false;
   }
 }
@@ -63,8 +69,12 @@ export async function authFetch(endpoint, options = {}) {
 
   if (res.status === 401) {
     clearToken();
-    window.navigate("login");
+    // Tenta recarregar para ir pro login
+    window.location.reload(); 
   }
+
+  // Proteção para respostas sem conteúdo (ex: delete)
+  if (res.status === 204) return null;
 
   return res.json();
 }
