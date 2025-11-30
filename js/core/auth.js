@@ -1,26 +1,51 @@
-// Requisição autenticada automática com Bearer Token
-export async function authFetch(url, options = {}) {
-  const token = getToken();
+// ==================================================
+//  AUTH.JS — Controle de autenticação do usuário
+// ==================================================
 
-  if (!token) {
-    throw new Error("Usuário não autenticado.");
-  }
+// Salva o usuário no localStorage após login bem-sucedido
+export async function login(username, password) {
+    try {
+        const response = await fetch(`${window.API_URL}/token`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ username, password })
+        });
 
-  const headers = options.headers || {};
-  headers["Authorization"] = `Bearer ${token}`;
+        if (!response.ok) {
+            return false;
+        }
 
-  const response = await fetch(url, {
-    ...options,
-    headers
-  });
+        const data = await response.json();
 
-  if (response.status === 401) {
-    // Token expirou → força logout
-    clearToken();
-    window.navigate("login");
-  }
+        // salva o token e o usuário
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify({ username }));
 
-  return response;
+        return true;
+
+    } catch (err) {
+        console.error("Erro no login:", err);
+        return false;
+    }
+}
+
+// Retorna dados do usuário logado
+export function getUser() {
+    const data = localStorage.getItem("user");
+    return data ? JSON.parse(data) : null;
+}
+
+// Verifica se existe token → usuário está logado
+export function isLogged() {
+    return localStorage.getItem("token") !== null;
+}
+
+// Remove dados de login
+export function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 }
 
 
