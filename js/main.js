@@ -5,21 +5,27 @@
 import { navigate } from "./core/router.js";
 import { isLogged } from "./core/auth.js";
 
-// Aguarda a splash desaparecer antes de iniciar
-document.addEventListener("DOMContentLoaded", () => {
+// ================================
+//  BOOT DO APLICATIVO
+// ================================
 
-  // A splash tem animação de 1.5s → esperamos 1.6s
+document.addEventListener("DOMContentLoaded", () => {
+  
+  // Animação da splash dura 1.5s → esperamos 1.6s
   setTimeout(() => {
     iniciarApp();
   }, 1600);
+
 });
 
 function iniciarApp() {
-  // Se o usuário está logado → vai para dashboard
-  // Senão → vai para login
+
+  // Se existe token → vai para a dashboard
   if (isLogged()) {
     navigate("dashboard");
-  } else {
+  } 
+  // Senão → login
+  else {
     navigate("login");
   }
 }
