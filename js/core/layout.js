@@ -1,69 +1,76 @@
-// ===================================================
-//  FisioManager Premium — LAYOUT.JS
-// ===================================================
+// ============================================
+//   AUTH.JS — Controle de autenticação
+// ============================================
 
-import { clearToken, getUser } from "./auth.js";
-import { navigate } from "./router.js";
+// LOGIN DO USUÁRIO
+export async function login(username, password) {
+    try {
+        const response = await fetch(`${window.API_URL}/token`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
 
-// Atualiza nome do usuário no layout
-export function updateLayoutUser() {
-  const user = getUser();
-  const el = document.getElementById("layoutUser");
+        if (!response.ok) return false;
 
-  if (el) {
-    el.textContent = user ? user.username : "Visitante";
-  }
+        const data = await response.json();
+
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("user", JSON.stringify({ username }));
+
+        return true;
+
+    } catch (err) {
+        console.error("Erro no login:", err);
+        return false;
+    }
 }
 
-// Eventos do layout
-export function setupLayoutEvents() {
-  const logoutBtn = document.getElementById("logout-btn");
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      clearToken();
-      navigate("login");
-    });
-  }
-
-  document.querySelectorAll("[data-route]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      navigate(btn.dataset.route);
-    });
-  });
+// BUSCAR TOKEN
+export function getToken() {
+    return localStorage.getItem("token");
 }
 
-// Renderiza layout + página interna
-export function renderLayout(contentHtml) {
-  document.getElementById("app").innerHTML = `
-    <div class="layout">
-      <aside class="sidebar">
-        <h2 class="logo">FisioManager</h2>
+// BUSCAR USUÁRIO
+export function getUser() {
+    const u = localStorage.getItem("user");
+    return u ? JSON.parse(u) : null;
+}
 
-        <nav>
-          <button data-route="dashboard">Dashboard</button>
-          <button data-route="pacientes">Pacientes</button>
-          <button data-route="agenda">Agenda</button>
-          <button data-route="evolucoes">Evoluções</button>
-          <button data-route="historico">Histórico</button>
-          <button data-route="financeiro">Financeiro</button>
-          <button data-route="config">Configurações</button>
-        </nav>
+// VERIFICAR LOGIN
+export function isLogged() {
+    return getToken() !== null;
+}
 
-        <footer>
-          <p id="layoutUser"></p>
-          <button id="logout-btn">Sair</button>
-        </footer>
-      </aside>
+// LOGOUT (USADO PELO layout.js)
+export function clearToken() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+}
 
-      <main class="content">
-        ${contentHtml}
-      </main>
-    </div>
-  `;
+// FETCH AUTENTICADO
+export async function authFetch(endpoint, options = {}) {
+    const token = getToken();
 
-  updateLayoutUser();
-  setupLayoutEvents();
+    const final = {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            ...(options.headers || {})
+        }
+    };
+
+    const response = await fetch(`${window.API_URL}${endpoint}`, final);
+
+    // se o token expirou → força logout
+    if (response.status === 401) {
+        clearToken();
+        window.navigate("login");
+        return [];
+    }
+
+    return response.json();
 }
 
 

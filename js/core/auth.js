@@ -1,25 +1,20 @@
-// ==================================================
-//  AUTH.JS — Controle de autenticação do usuário
-// ==================================================
+// ============================================
+//   AUTH.JS — Controle de autenticação
+// ============================================
 
-// Salva o usuário no localStorage após login bem-sucedido
+// LOGIN DO USUÁRIO
 export async function login(username, password) {
     try {
         const response = await fetch(`${window.API_URL}/token`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
         });
 
-        if (!response.ok) {
-            return false;
-        }
+        if (!response.ok) return false;
 
         const data = await response.json();
 
-        // salva o token e o usuário
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("user", JSON.stringify({ username }));
 
@@ -31,21 +26,49 @@ export async function login(username, password) {
     }
 }
 
-// Retorna dados do usuário logado
+// BUSCAR TOKEN
+export function getToken() {
+    return localStorage.getItem("token");
+}
+
+// BUSCAR USUÁRIO
 export function getUser() {
-    const data = localStorage.getItem("user");
-    return data ? JSON.parse(data) : null;
+    const u = localStorage.getItem("user");
+    return u ? JSON.parse(u) : null;
 }
 
-// Verifica se existe token → usuário está logado
+// VERIFICAR LOGIN
 export function isLogged() {
-    return localStorage.getItem("token") !== null;
+    return getToken() !== null;
 }
 
-// Remove dados de login
-export function logout() {
+// LOGOUT (USADO PELO layout.js)
+export function clearToken() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+}
+
+// FETCH AUTENTICADO
+export async function authFetch(endpoint, options = {}) {
+    const token = getToken();
+
+    const final = {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            ...(options.headers || {})
+        }
+    };
+
+    const response = await fetch(`${window.API_URL}${endpoint}`, final);
+
+    if (response.status === 401) {
+        clearToken();
+        window.navigate("login");
+    }
+
+    return response.json();
 }
 
 
