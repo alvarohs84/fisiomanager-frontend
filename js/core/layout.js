@@ -1,62 +1,65 @@
-// ===================================================
-//  LAYOUT — Shell do App
-// ===================================================
-
-import { clearToken, getUser } from "./auth.js";
 import { navigate } from "./router.js";
+import { clearToken, getUser } from "./auth.js";
 
-export function updateLayoutUser() {
-  const u = getUser();
-  const el = document.getElementById("layoutUser");
-  if (el) el.textContent = u ? u.username : "Visitante";
-}
+export function renderLayout(contentHTML) {
+  const user = getUser();
+  const username = user ? user.username : "Usuário";
 
-export function setupLayoutEvents() {
-  const logout = document.getElementById("logout-btn");
-  if (logout) {
-    logout.addEventListener("click", () => {
-      clearToken();
-      navigate("login");
-    });
-  }
+  // HTML da Barra de Navegação (Navbar)
+  const navHTML = `
+    <header class="main-header">
+      <div class="logo-area">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">FisioManager</span>
+      </div>
 
-  document.querySelectorAll("[data-route]").forEach(btn => {
-    btn.onclick = () => navigate(btn.dataset.route);
-  });
-}
+      <nav class="nav-menu">
+        <button onclick="window.navegar('dashboard')" class="nav-btn">Dashboard</button>
+        <button onclick="window.navegar('pacientes')" class="nav-btn">Pacientes</button>
+        <button onclick="window.navegar('agenda')" class="nav-btn">Agenda</button>
+        <button onclick="window.navegar('evolucoes')" class="nav-btn">Evoluções</button>
+        <button onclick="window.navegar('financeiro')" class="nav-btn">Financeiro</button>
+      </nav>
 
-export function renderLayout(contentHtml) {
-  document.getElementById("app").innerHTML = `
-    <div class="layout">
-      <aside class="sidebar">
-        <h2 class="logo">FisioManager</h2>
+      <div class="user-area">
+        <span class="user-name">Olá, <strong>${username}</strong></span>
+        <button id="btnSair" class="btn-logout">Sair</button>
+      </div>
+    </header>
 
-        <nav>
-          <button data-route="dashboard">Dashboard</button>
-          <button data-route="pacientes">Pacientes</button>
-          <button data-route="agenda">Agenda</button>
-          <button data-route="evolucoes">Evoluções</button>
-          <button data-route="historico">Histórico</button>
-          <button data-route="financeiro">Financeiro</button>
-          <button data-route="config">Configurações</button>
-        </nav>
-
-        <footer>
-          <p id="layoutUser"></p>
-          <button id="logout-btn">Sair</button>
-        </footer>
-      </aside>
-
-      <main class="content">
-        ${contentHtml}
-      </main>
-    </div>
+    <main class="main-content">
+      ${contentHTML}
+    </main>
   `;
 
-  updateLayoutUser();
-  setupLayoutEvents();
+  document.getElementById("app").innerHTML = navHTML;
+
+  // Reatribui a função global de navegação para o onclick funcionar
+  window.navegar = (rota) => navigate(rota);
+
+  // Evento de Logout
+  document.getElementById("btnSair").addEventListener("click", () => {
+    if (confirm("Deseja realmente sair?")) {
+      clearToken();
+      window.location.reload();
+    }
+  });
+  
+  // Destaca o botão ativo no menu
+  highlightActiveMenu();
 }
 
+function highlightActiveMenu() {
+    // Pega a rota atual da URL ou hash se estiver usando
+    // Lógica simples: remove classe active de todos e adiciona no clicado
+    const buttons = document.querySelectorAll('.nav-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            buttons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+}
 
 
 
