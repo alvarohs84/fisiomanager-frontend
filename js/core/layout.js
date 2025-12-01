@@ -5,7 +5,7 @@ export function renderLayout(contentHTML) {
   const user = getUser();
   const username = user ? user.username : "Usuário";
 
-  // HTML da Barra de Navegação (Navbar)
+  // HTML da Navbar (Com o novo botão Sair Mobile)
   const navHTML = `
     <header class="main-header">
       <div class="logo-area">
@@ -19,6 +19,8 @@ export function renderLayout(contentHTML) {
         <button onclick="window.navegar('agenda')" class="nav-btn">Agenda</button>
         <button onclick="window.navegar('evolucoes')" class="nav-btn">Evoluções</button>
         <button onclick="window.navegar('financeiro')" class="nav-btn">Financeiro</button>
+        
+        <button id="btnSairMobile" class="nav-btn" style="color: #dc3545; font-weight: bold;">Sair</button>
       </nav>
 
       <div class="user-area">
@@ -34,24 +36,27 @@ export function renderLayout(contentHTML) {
 
   document.getElementById("app").innerHTML = navHTML;
 
-  // Reatribui a função global de navegação para o onclick funcionar
   window.navegar = (rota) => navigate(rota);
 
-  // Evento de Logout
-  document.getElementById("btnSair").addEventListener("click", () => {
+  // Lógica de Logout unificada (funciona pros dois botões)
+  const logoutAction = () => {
     if (confirm("Deseja realmente sair?")) {
       clearToken();
       window.location.reload();
     }
-  });
+  };
+
+  // Associa o evento aos botões se eles existirem na tela
+  const btnSairDesktop = document.getElementById("btnSair");
+  if(btnSairDesktop) btnSairDesktop.addEventListener("click", logoutAction);
+
+  const btnSairMobile = document.getElementById("btnSairMobile");
+  if(btnSairMobile) btnSairMobile.addEventListener("click", logoutAction);
   
-  // Destaca o botão ativo no menu
   highlightActiveMenu();
 }
 
 function highlightActiveMenu() {
-    // Pega a rota atual da URL ou hash se estiver usando
-    // Lógica simples: remove classe active de todos e adiciona no clicado
     const buttons = document.querySelectorAll('.nav-btn');
     buttons.forEach(btn => {
         btn.addEventListener('click', function() {

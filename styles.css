@@ -191,3 +191,103 @@ label {
   margin-bottom: 5px;
   font-weight: 500;
 }
+
+/* ==========================================================================
+   📱 MODO MOBILE (APP FEEL)
+   ========================================================================== */
+@media (max-width: 768px) {
+
+  /* 1. Ajuste do Cabeçalho (Header) */
+  .main-header {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .logo-area {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+
+  /* Menu com Rolagem Horizontal (Estilo Instagram/YouTube) */
+  .nav-menu {
+    width: 100%;
+    overflow-x: auto; /* Permite rolar para o lado */
+    white-space: nowrap; /* Não quebra linha */
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch; /* Rolagem suave no iPhone */
+  }
+
+  .nav-menu::-webkit-scrollbar {
+    height: 0px; /* Esconde barra de rolagem */
+    background: transparent;
+  }
+
+  .nav-btn {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    background-color: #f0f2f5; /* Botões cinza claro para parecer 'tags' */
+    margin-right: 5px;
+  }
+
+  .user-area {
+    display: none; /* Esconde nome do usuário no topo para economizar espaço */
+  }
+
+  /* 2. Conteúdo e Grids */
+  .main-content {
+    padding: 15px; /* Menos margem */
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* 1 Card por linha (Empilhado) */
+  }
+
+  .row {
+    flex-direction: column; /* Inputs um embaixo do outro */
+  }
+
+  .col {
+    width: 100% !important; /* Ocupa largura total */
+  }
+
+  /* 3. Tabelas Responsivas (Com rolagem) */
+  .table-responsive {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+  }
+  
+  table {
+    min-width: 600px; /* Força a tabela a ter tamanho mínimo para não esmagar */
+  }
+
+  /* 4. Modais (Tela Cheia no Celular) */
+  #modalAgenda > div, 
+  .card {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0;
+    max-width: none !important;
+  }
+  
+  #modalAgenda > div {
+    height: 100vh; /* Ocupa altura toda */
+    border-radius: 0;
+    overflow-y: auto; /* Permite rolar se o teclado abrir */
+  }
+
+  /* 5. FullCalendar Ajustes */
+  .fc-header-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+}
