@@ -9,7 +9,7 @@
 }
 
 body {
-  background-color: #f0f2f5; /* Cinza bem claro e moderno */
+  background-color: #f0f2f5;
   color: #333;
 }
 
@@ -21,7 +21,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 30px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Sombra suave */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -42,7 +42,7 @@ body {
   border-radius: 8px;
 }
 
-/* Botões do Menu */
+/* MENU E CORES DOS BOTÕES */
 .nav-menu {
   display: flex;
   gap: 5px;
@@ -52,24 +52,43 @@ body {
   background: transparent;
   border: none;
   padding: 10px 15px;
-  border-radius: 6px;
   color: #555;
-  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
   font-size: 0.95rem;
+  font-weight: 600; 
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  border-radius: 8px;
 }
 
-.nav-btn:hover {
-  background-color: #f8f9fa;
-  color: #0056b3;
-}
+/* Dashboard (Cinza Escuro) */
+.btn-dashboard { color: #495057; }
+.btn-dashboard:hover, .btn-dashboard.active { background-color: #e9ecef; color: #212529; }
 
-.nav-btn.active {
-  background-color: #e7f1ff;
-  color: #0056b3;
-  font-weight: 600;
-}
+/* Pacientes (Azul) */
+.btn-pacientes { color: #007bff; }
+.btn-pacientes:hover, .btn-pacientes.active { background-color: #e7f1ff; color: #0056b3; }
+
+/* Agenda (Roxo) */
+.btn-agenda { color: #6f42c1; }
+.btn-agenda:hover, .btn-agenda.active { background-color: #f3e5f5; color: #4a148c; }
+
+/* Avaliações (Laranja) */
+.btn-avaliacoes { color: #fd7e14; }
+.btn-avaliacoes:hover, .btn-avaliacoes.active { background-color: #fff3cd; color: #d9480f; }
+
+/* Evoluções (Verde Azulado / Teal) */
+.btn-evolucoes { color: #20c997; }
+.btn-evolucoes:hover, .btn-evolucoes.active { background-color: #e6fffa; color: #0ca678; }
+
+/* Financeiro (Verde Dinheiro) */
+.btn-financeiro { color: #28a745; }
+.btn-financeiro:hover, .btn-financeiro.active { background-color: #d4edda; color: #155724; }
+
+/* Sair Mobile (Vermelho) */
+.btn-sair-mobile { color: #dc3545; }
+.btn-sair-mobile:hover { background-color: #f8d7da; color: #721c24; }
+
 
 /* Área do Usuário */
 .user-area {
@@ -95,14 +114,13 @@ body {
   color: white;
 }
 
-/* --- 3. CONTEÚDO PRINCIPAL --- */
+/* --- 3. GERAIS --- */
 .main-content {
   padding: 30px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* --- 4. DASHBOARD E CARDS --- */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -120,7 +138,7 @@ body {
 }
 
 .card:hover {
-  transform: translateY(-2px); /* Efeito de levantar */
+  transform: translateY(-2px);
   box-shadow: 0 8px 15px rgba(0,0,0,0.05);
 }
 
@@ -138,7 +156,7 @@ body {
   color: #2c3e50;
 }
 
-/* --- 5. TABELAS --- */
+/* Tabelas */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -148,56 +166,37 @@ table {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-thead {
-  background-color: #f8f9fa;
+thead { background-color: #f8f9fa; }
+th { text-align: left; padding: 15px; color: #555; font-weight: 600; border-bottom: 2px solid #eee; }
+td { padding: 15px; border-bottom: 1px solid #eee; color: #333; }
+tr:hover { background-color: #fbfbfb; }
+
+/* Botão Primário Genérico */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-th {
-  text-align: left;
-  padding: 15px;
-  color: #555;
-  font-weight: 600;
-  border-bottom: 2px solid #eee;
-}
-
-td {
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-  color: #333;
-}
-
-tr:hover {
-  background-color: #fbfbfb;
-}
-
-/* --- 6. INPUTS E FORMULÁRIOS --- */
-input, select {
+/* Inputs */
+input, select, textarea {
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 10px;
   outline: none;
   transition: border 0.2s;
 }
-
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   border-color: #0056b3;
   box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
 }
+label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 5px; font-weight: 500; }
 
-label {
-  display: block;
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-/* ==========================================================================
-   📱 MODO MOBILE (APP FEEL)
-   ========================================================================== */
+/* --- 4. RESPONSIVO MOBILE --- */
 @media (max-width: 768px) {
-
-  /* 1. Ajuste do Cabeçalho (Header) */
   .main-header {
     flex-direction: column;
     height: auto;
@@ -205,89 +204,45 @@ label {
     gap: 10px;
   }
 
-  .logo-area {
-    width: 100%;
-    justify-content: center;
-    margin-bottom: 5px;
-  }
+  .logo-area { width: 100%; justify-content: center; margin-bottom: 5px; }
 
-  /* Menu com Rolagem Horizontal (Estilo Instagram/YouTube) */
   .nav-menu {
     width: 100%;
-    overflow-x: auto; /* Permite rolar para o lado */
-    white-space: nowrap; /* Não quebra linha */
+    overflow-x: auto;
+    white-space: nowrap;
     padding-bottom: 5px;
-    -webkit-overflow-scrolling: touch; /* Rolagem suave no iPhone */
+    -webkit-overflow-scrolling: touch;
   }
-
-  .nav-menu::-webkit-scrollbar {
-    height: 0px; /* Esconde barra de rolagem */
-    background: transparent;
-  }
+  .nav-menu::-webkit-scrollbar { height: 0px; background: transparent; }
 
   .nav-btn {
     font-size: 0.85rem;
     padding: 8px 12px;
-    background-color: #f0f2f5; /* Botões cinza claro para parecer 'tags' */
+    background-color: #f0f2f5; 
     margin-right: 5px;
   }
 
-  .user-area {
-    display: none; /* Esconde nome do usuário no topo para economizar espaço */
-  }
+  .user-area { display: none; }
 
-  /* 2. Conteúdo e Grids */
-  .main-content {
-    padding: 15px; /* Menos margem */
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr; /* 1 Card por linha (Empilhado) */
-  }
-
-  .row {
-    flex-direction: column; /* Inputs um embaixo do outro */
-  }
-
-  .col {
-    width: 100% !important; /* Ocupa largura total */
-  }
-
-  /* 3. Tabelas Responsivas (Com rolagem) */
-  .table-responsive {
-    overflow-x: auto;
-    display: block;
-    width: 100%;
-  }
+  .main-content { padding: 15px; }
+  .dashboard-grid { grid-template-columns: 1fr; }
   
-  table {
-    min-width: 600px; /* Força a tabela a ter tamanho mínimo para não esmagar */
-  }
+  .row { flex-direction: column; }
+  .col { width: 100% !important; }
 
-  /* 4. Modais (Tela Cheia no Celular) */
-  #modalAgenda > div, 
-  .card {
+  /* Ajuste de tabelas */
+  .table-responsive { overflow-x: auto; display: block; width: 100%; }
+  table { min-width: 600px; }
+
+  /* Modais cheios */
+  #modalAgenda > div, .card {
     width: 100% !important;
     margin: 0 !important;
     border-radius: 0;
     max-width: none !important;
   }
-  
-  #modalAgenda > div {
-    height: 100vh; /* Ocupa altura toda */
-    border-radius: 0;
-    overflow-y: auto; /* Permite rolar se o teclado abrir */
-  }
+  #modalAgenda > div { height: 100vh; overflow-y: auto; }
 
-  /* 5. FullCalendar Ajustes */
-  .fc-header-toolbar {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .fc-toolbar-chunk {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
+  .fc-header-toolbar { flex-direction: column; gap: 10px; }
+  .fc-toolbar-chunk { display: flex; justify-content: center; width: 100%; }
 }

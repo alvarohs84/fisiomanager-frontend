@@ -5,7 +5,7 @@ export function renderLayout(contentHTML) {
   const user = getUser();
   const username = user ? user.username : "Usuário";
 
-  // HTML da Navbar (Com o novo botão Sair Mobile)
+  // HTML da Navbar (Com classes de cores e botão Avaliações)
   const navHTML = `
     <header class="main-header">
       <div class="logo-area">
@@ -14,13 +14,16 @@ export function renderLayout(contentHTML) {
       </div>
 
       <nav class="nav-menu">
-        <button onclick="window.navegar('dashboard')" class="nav-btn">Dashboard</button>
-        <button onclick="window.navegar('pacientes')" class="nav-btn">Pacientes</button>
-        <button onclick="window.navegar('agenda')" class="nav-btn">Agenda</button>
-        <button onclick="window.navegar('evolucoes')" class="nav-btn">Evoluções</button>
-        <button onclick="window.navegar('financeiro')" class="nav-btn">Financeiro</button>
+        <button onclick="window.navegar('dashboard')" class="nav-btn btn-dashboard">Dashboard</button>
+        <button onclick="window.navegar('pacientes')" class="nav-btn btn-pacientes">Pacientes</button>
+        <button onclick="window.navegar('agenda')" class="nav-btn btn-agenda">Agenda</button>
         
-        <button id="btnSairMobile" class="nav-btn" style="color: #dc3545; font-weight: bold;">Sair</button>
+        <button onclick="window.navegar('avaliacoes')" class="nav-btn btn-avaliacoes">Avaliações</button>
+        
+        <button onclick="window.navegar('evolucoes')" class="nav-btn btn-evolucoes">Evoluções</button>
+        <button onclick="window.navegar('financeiro')" class="nav-btn btn-financeiro">Financeiro</button>
+        
+        <button id="btnSairMobile" class="nav-btn btn-sair-mobile">Sair</button>
       </nav>
 
       <div class="user-area">
@@ -38,7 +41,7 @@ export function renderLayout(contentHTML) {
 
   window.navegar = (rota) => navigate(rota);
 
-  // Lógica de Logout unificada (funciona pros dois botões)
+  // Lógica de Logout
   const logoutAction = () => {
     if (confirm("Deseja realmente sair?")) {
       clearToken();
@@ -46,7 +49,6 @@ export function renderLayout(contentHTML) {
     }
   };
 
-  // Associa o evento aos botões se eles existirem na tela
   const btnSairDesktop = document.getElementById("btnSair");
   if(btnSairDesktop) btnSairDesktop.addEventListener("click", logoutAction);
 
