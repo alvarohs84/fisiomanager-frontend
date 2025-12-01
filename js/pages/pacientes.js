@@ -2,7 +2,7 @@ import { renderLayout } from "../core/layout.js";
 import { authFetch } from "../core/auth.js";
 
 // =================================================================
-// FUNÇÃO PRINCIPAL (Exportada)
+// FUNÇÃO PRINCIPAL (Exportada para o Router)
 // =================================================================
 export async function renderPacientes() {
   // 1. Monta o HTML da tela (Formulário + Tabela)
@@ -28,8 +28,8 @@ export async function renderPacientes() {
             <div class="col">
               <label>Sexo</label>
               <select id="sexo" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                <option value="M">Masculino</option>
-                <option value="F">Feminino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
                 <option value="Outro">Outro</option>
               </select>
             </div>
@@ -43,8 +43,8 @@ export async function renderPacientes() {
             </div>
           </div>
 
-          <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px;">
-            Salvar Paciente
+          <button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold;">
+            + Salvar Paciente
           </button>
         </form>
       </div>
@@ -53,17 +53,18 @@ export async function renderPacientes() {
 
       <h3>Lista de Pacientes</h3>
       <div style="overflow-x: auto;">
-        <table width="100%" style="border-collapse: collapse;">
+        <table width="100%" style="border-collapse: collapse; margin-top: 10px;">
           <thead>
             <tr style="background: #333; color: #fff; text-align: left;">
               <th style="padding: 10px;">ID</th>
               <th style="padding: 10px;">Nome</th>
               <th style="padding: 10px;">Idade</th> <th style="padding: 10px;">Convênio</th>
-              <th style="padding: 10px;">Ações</th>
+              <th style="padding: 10px;">Telefone</th>
+              <th style="padding: 10px; text-align: center;">Ações</th>
             </tr>
           </thead>
           <tbody id="listaPac">
-            <tr><td colspan="5">Carregando...</td></tr>
+            <tr><td colspan="6" style="text-align:center; padding: 15px;">Carregando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -72,91 +73,91 @@ export async function renderPacientes() {
 
   renderLayout(html);
 
-  // 2. Adiciona o evento de Salvar no formulário
+  // 2. Ativa o formulário
   document.getElementById("form-paciente").addEventListener("submit", salvarPaciente);
 
-  // 3. Carrega a lista do banco de dados
+  // 3. Carrega a lista inicial
   await carregarLista();
 }
 
 // =================================================================
-// FUNÇÕES AUXILIARES (Lógica)
+// LÓGICA DO SISTEMA
 // =================================================================
 
-// 1. Buscar e Renderizar a Tabela
+// --- CARREGAR LISTA ---
 async function carregarLista() {
   const tbody = document.getElementById("listaPac");
   
   try {
-    // Faz a chamada ao seu backend (GET /patients/)
+    // IMPORTANTE: A barra no final "/" evita redirecionamento e erro de CORS
     const lista = await authFetch("/patients/"); 
     
-    // Limpa a tabela
     tbody.innerHTML = "";
 
     if (lista.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum paciente cadastrado.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">Nenhum paciente cadastrado.</td></tr>`;
       return;
     }
 
-    // Preenche as linhas
+    // Preenche a tabela
     tbody.innerHTML = lista.map(p => `
       <tr style="border-bottom: 1px solid #ccc;">
         <td style="padding: 10px;">${p.id}</td>
         <td style="padding: 10px;"><strong>${p.name}</strong></td>
         <td style="padding: 10px;">${p.idade} anos</td>
         <td style="padding: 10px;">${p.insurance || '-'}</td>
-        <td style="padding: 10px;">
-           <button onclick="window.deletarPaciente(${p.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">🗑️</button>
+        <td style="padding: 10px;">${p.phone || '-'}</td>
+        <td style="padding: 10px; text-align: center;">
+           <button onclick="window.deletarPaciente(${p.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;" title="Excluir">🗑️</button>
         </td>
       </tr>
     `).join("");
 
   } catch (error) {
     console.error(error);
-    tbody.innerHTML = `<tr><td colspan="5" style="color: red;">Erro ao carregar pacientes.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="color: red; text-align:center;">Erro ao carregar pacientes. Verifique o console.</td></tr>`;
   }
 }
 
-// 2. Salvar Paciente
+// --- SALVAR PACIENTE ---
 async function salvarPaciente(e) {
-  e.preventDefault(); // Não deixa a página recarregar
+  e.preventDefault(); // Impede a página de recarregar
 
-  // Pega os valores dos inputs
+  // Monta o objeto com os dados do formulário
   const payload = {
     name: document.getElementById("nome").value,
-    birth_date: document.getElementById("data_nascimento").value, // Formato YYYY-MM-DD
+    birth_date: document.getElementById("data_nascimento").value, // YYYY-MM-DD
     sex: document.getElementById("sexo").value,
     phone: document.getElementById("telefone").value,
     insurance: document.getElementById("convenio").value
   };
 
   try {
-    const res = await authFetch("/patients/", {
+    // IMPORTANTE: POST com barra no final "/"
+    await authFetch("/patients/", {
       method: "POST",
       body: JSON.stringify(payload)
     });
 
-    // Se chegou aqui, deu certo (o authFetch joga erro se falhar)
     alert("Paciente cadastrado com sucesso!");
-    document.getElementById("form-paciente").reset(); // Limpa o form
-    carregarLista(); // Recarrega a tabela
+    document.getElementById("form-paciente").reset(); // Limpa os campos
+    carregarLista(); // Atualiza a tabela imediatamente
 
   } catch (error) {
-    alert("Erro ao salvar: verifique os dados.");
-    console.error(error);
+    console.error("Erro ao salvar:", error);
+    alert("Erro ao salvar o paciente. Verifique os dados.");
   }
 }
 
-// 3. Deletar (Expondo para o window para o onclick funcionar no HTML string)
+// --- DELETAR PACIENTE ---
+// Colocamos no "window" para o HTML conseguir chamar no onclick
 window.deletarPaciente = async function(id) {
   if (confirm("Tem certeza que deseja excluir este paciente?")) {
     try {
       await authFetch(`/patients/${id}`, { method: "DELETE" });
-      carregarLista(); // Atualiza a lista
+      carregarLista(); // Atualiza a tabela
     } catch (error) {
       alert("Erro ao deletar.");
     }
   }
 };
-
