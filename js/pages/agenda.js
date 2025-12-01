@@ -55,13 +55,9 @@ export async function renderAgenda() {
 
   renderLayout(html);
   
-  // 1. Carrega pacientes para o select
   await carregarPacientesNoSelect();
-  
-  // 2. Inicia o calendário
   initFullCalendar();
 
-  // 3. Configura botões
   document.getElementById("btnNovoEvent").onclick = () => abrirModal();
   document.getElementById("btnCloseModal").onclick = fecharModal;
   document.getElementById("btnSaveEvent").onclick = salvarEvento;
@@ -73,8 +69,6 @@ function initFullCalendar() {
   
   calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridWeek',
-    
-    // --- TRADUÇÃO PT-BR ---
     locale: 'pt-br',
     buttonText: {
       today:    'Hoje',
@@ -83,22 +77,18 @@ function initFullCalendar() {
       day:      'Dia',
       list:     'Lista'
     },
-    // ----------------------
-
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
-    
-    slotMinTime: "06:00:00", // Começa as 6 da manhã
-    slotMaxTime: "22:00:00", // Termina as 10 da noite
-    allDaySlot: false,       // Remove a linha de "Dia Inteiro" para ficar mais limpo
-    
-    editable: true,   // Permite arrastar
-    selectable: true, // Permite clicar na grade para criar
+    slotMinTime: "06:00:00",
+    slotMaxTime: "22:00:00",
+    allDaySlot: false,
+    editable: true,
+    selectable: true,
 
-    // BUSCAR EVENTOS DO BACKEND
+    // --- CARREGAR EVENTOS ---
     events: async (info, success, failure) => {
       try {
         const data = await authFetch("/appointments/");
@@ -107,9 +97,13 @@ function initFullCalendar() {
           title: `${ev.patient_name} (${ev.status})`,
           start: ev.start_time,
           end: ev.end_time,
-          // Cores baseadas no status
           backgroundColor: ev.status === 'Realizado' ? '#28a745' : (ev.status === 'Cancelado' ? '#dc3545' : '#007bff'),
-          borderColor: 'transparent'
+          borderColor: 'transparent',
+          // SALVAMOS DADOS EXTRAS AQUI PARA USAR NA EDIÇÃO
+          extendedProps: {
+              status: ev.status,
+              patient_id: ev.patient_id
+          }
         }));
         success(eventos);
       } catch (e) {
@@ -118,59 +112,42 @@ function initFullCalendar() {
       }
     },
 
-    // CLICAR NO EVENTO (ABRIR PARA EDITAR)
-    eventClick: (info) => {
-      abrirModal(info.event);
-    },
-
-    // ARRASTAR E SOLTAR (MUDAR HORÁRIO)
+    eventClick: (info) => abrirModal(info.event),
+    
     eventDrop: async (info) => {
-      if (!confirm(`Mover atendimento de ${info.event.extendedProps.patient_name || 'paciente'}?`)) {
+      if (!confirm(`Mover atendimento de ${info.event.title}?`)) {
         info.revert();
         return;
       }
       try {
         await authFetch(`/appointments/${info.event.id}`, {
           method: "PATCH",
-          body: JSON.stringify({
-            start_time: info.event.start,
-            end_time: info.event.end
-          })
+          body: JSON.stringify({ start_time: info.event.start, end_time: info.event.end })
         });
         showToast("Reagendado com sucesso!", "success");
       } catch (e) {
         info.revert();
-        showToast("Erro ao mover agendamento.", "error");
+        showToast("Erro ao mover.", "error");
       }
     },
 
-    // REDIMENSIONAR (AUMENTAR/DIMINUIR TEMPO)
     eventResize: async (info) => {
       try {
         await authFetch(`/appointments/${info.event.id}`, {
             method: "PATCH",
-            body: JSON.stringify({
-            start_time: info.event.start,
-            end_time: info.event.end
-            })
+            body: JSON.stringify({ start_time: info.event.start, end_time: info.event.end })
         });
         showToast("Duração atualizada!", "success");
       } catch(e) {
         info.revert();
-        showToast("Erro ao redimensionar.", "error");
       }
     },
 
-    // CLICAR NA GRADE EM BRANCO (CRIAR NOVO)
-    select: (info) => {
-      abrirModal(null, info.start, info.end);
-    }
+    select: (info) => abrirModal(null, info.start, info.end)
   });
 
   calendar.render();
 }
-
-// --- FUNÇÕES AUXILIARES ---
 
 async function carregarPacientesNoSelect() {
   const select = document.getElementById("agPaciente");
@@ -189,29 +166,49 @@ async function carregarPacientesNoSelect() {
 function abrirModal(event = null, start = null, end = null) {
   const modal = document.getElementById("modalAgenda");
   const btnDelete = document.getElementById("btnDeleteEvent");
+  const btnSave = document.getElementById("btnSaveEvent");
+  const modalTitle = document.getElementById("modalTitle");
+
   modal.style.display = "block";
 
   if (event) {
-    // MODO EDIÇÃO
+    // --- MODO EDIÇÃO ---
     eventSelectedId = event.id;
     
-    // Ajuste de fuso horário para o input datetime-local
+    // Atualiza Textos e Cores
+    modalTitle.innerText = "Editar Agendamento";
+    btnSave.innerText = "Atualizar";
+    btnSave.style.backgroundColor = "#007bff"; // Azul
+
+    // Tenta selecionar o paciente no select
+    if (event.extendedProps.patient_id) {
+        document.getElementById("agPaciente").value = event.extendedProps.patient_id;
+    }
+
+    // Preenche Datas
     const isoStart = new Date(event.start.getTime() - (event.start.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
     const isoEnd = event.end ? new Date(event.end.getTime() - (event.end.getTimezoneOffset() * 60000)).toISOString().slice(0, 16) : isoStart;
-
     document.getElementById("agInicio").value = isoStart;
     document.getElementById("agFim").value = isoEnd;
-    
-    // Se quiser selecionar o status correto, precisaria vir do backend no extendedProps, 
-    // mas por padrão vamos deixar 'Agendado' ou manter o que está se a lógica for complexa.
-    // Simples:
-    document.getElementById("agStatus").value = "Agendado"; 
+
+    // Preenche Status
+    if (event.extendedProps && event.extendedProps.status) {
+         document.getElementById("agStatus").value = event.extendedProps.status;
+    }
 
     btnDelete.style.display = "block";
+
   } else {
-    // MODO NOVO
+    // --- MODO NOVO ---
     eventSelectedId = null;
+    
+    // Atualiza Textos e Cores
+    modalTitle.innerText = "Novo Agendamento";
+    btnSave.innerText = "Salvar";
+    btnSave.style.backgroundColor = "#28a745"; // Verde
+
     btnDelete.style.display = "none";
+    document.getElementById("agStatus").value = "Agendado"; 
     
     if (start && end) {
       const isoStart = new Date(start.getTime() - (start.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
@@ -249,22 +246,23 @@ async function salvarEvento() {
 
   try {
     if (eventSelectedId) {
-      // EDITAR
+      // EDITAR (PATCH)
       await authFetch(`/appointments/${eventSelectedId}`, {
         method: "PATCH",
         body: JSON.stringify(payload)
       });
+      showToast("Atualizado com sucesso!", "info");
     } else {
-      // CRIAR
+      // CRIAR (POST)
       await authFetch("/appointments/", {
         method: "POST",
         body: JSON.stringify(payload)
       });
+      showToast("Agendado com sucesso!", "success");
     }
     
     fecharModal();
-    calendar.refetchEvents(); // Recarrega os eventos visualmente
-    showToast("Salvo com sucesso!", "success");
+    calendar.refetchEvents();
 
   } catch (e) {
     console.error(e);
@@ -274,7 +272,6 @@ async function salvarEvento() {
 
 async function deletarEvento() {
   if (!confirm("Tem certeza que deseja excluir?")) return;
-  
   try {
     await authFetch(`/appointments/${eventSelectedId}`, { method: "DELETE" });
     fecharModal();
