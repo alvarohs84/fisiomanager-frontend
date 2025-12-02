@@ -7,12 +7,14 @@ import { renderLogin } from "./pages/login.js";
 import { renderDashboard } from "./pages/dashboard.js";
 import { renderPacientes } from "./pages/pacientes.js";
 import { renderAgenda } from "./pages/agenda.js";
+import { renderEvolucoes } from "./pages/evolucoes.js";
 import { renderFinanceiro } from "./pages/financeiro.js";
-import { renderProntuario } from "./pages/prontuario.js"; // <--- Importe Novo
+import { renderAvaliacoes } from "./pages/avaliacoes.js";
+import { renderProntuario } from "./pages/prontuario.js";
+import { renderConfiguracoes } from "./pages/configuracoes.js"; // <--- Importe Novo
 
 function router() {
   const rota = window.location.hash.slice(1) || "dashboard";
-  console.log("Rota:", rota);
 
   if (!isLogged()) {
     renderLogin();
@@ -37,7 +39,7 @@ function router() {
       renderAgenda();
       break;
 
-    case "prontuario": // <--- Rota Nova Unificada
+    case "prontuario":
       renderProntuario();
       break;
 
@@ -46,8 +48,12 @@ function router() {
       break;
 
     case "configuracoes":
-      renderLayout(`<div class="container"><h2>⚙️ Configurações</h2><div class="card" style="padding:40px; text-align:center;"><h3>Em breve</h3></div></div>`);
+      renderConfiguracoes(); // <--- Rota Nova
       break;
+      
+    // Casos antigos mantidos por segurança ou removidos se não usar mais
+    case "avaliacoes": renderAvaliacoes(); break;
+    case "evolucoes": renderEvolucoes(); break;
 
     default:
       navigate("dashboard");
