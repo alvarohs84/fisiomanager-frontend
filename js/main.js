@@ -9,6 +9,7 @@ import { renderPacientes } from "./pages/pacientes.js";
 import { renderAgenda } from "./pages/agenda.js";
 import { renderEvolucoes } from "./pages/evolucoes.js";
 import { renderFinanceiro } from "./pages/financeiro.js";
+import { renderAvaliacoes } from "./pages/avaliacoes.js"; // Importação correta
 
 function router() {
   const rota = window.location.hash.slice(1) || "dashboard";
@@ -37,21 +38,7 @@ function router() {
       break;
 
     case "avaliacoes":
-      // Tela temporária de Avaliações
-      renderLayout(`
-        <div class="container">
-            <h2>📋 Avaliações Cinético-Funcionais</h2>
-            <div class="card" style="margin-top: 20px; text-align: center; padding: 60px;">
-                <div style="font-size: 4rem; margin-bottom: 20px;">🦴</div>
-                <h3>Módulo de Avaliação</h3>
-                <p style="color: #666; max-width: 500px; margin: 0 auto;">
-                    Em breve você poderá criar fichas detalhadas de avaliação postural, 
-                    neurológica e ortopédica diretamente no sistema.
-                </p>
-                <button class="btn-primary" style="margin-top: 20px; opacity: 0.5; cursor: not-allowed;">+ Nova Avaliação (Em Breve)</button>
-            </div>
-        </div>
-      `);
+      renderAvaliacoes(); // <--- Apenas chama a função nova
       break;
 
     case "evolucoes":
