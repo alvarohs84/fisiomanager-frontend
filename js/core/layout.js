@@ -5,7 +5,7 @@ export function renderLayout(contentHTML) {
   const user = getUser();
   const username = user ? user.username : "Usuário";
 
-  // HTML da Navbar (Com classes de cores e botão Avaliações)
+  // HTML da Navbar
   const navHTML = `
     <header class="main-header">
       <div class="logo-area">
@@ -67,7 +67,6 @@ function highlightActiveMenu() {
         });
     });
 }
-
 
 
 

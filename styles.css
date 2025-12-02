@@ -246,3 +246,53 @@ label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 5px; fon
   .fc-header-toolbar { flex-direction: column; gap: 10px; }
   .fc-toolbar-chunk { display: flex; justify-content: center; width: 100%; }
 }
+
+/* ==========================================================================
+   🎨 CORES DOS BOTÕES DO MENU (Fundo Colorido, Texto Branco)
+   ========================================================================== */
+
+/* Estilo Base para todos os botões do menu */
+.nav-btn {
+  font-weight: 700; /* Letra mais grossa */
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease; /* Transição mais suave */
+  border-radius: 8px;
+  color: white !important; /* Texto sempre branco */
+  opacity: 0.85; /* Ligeiramente transparente quando não está ativo */
+  border: none;
+  margin: 0 2px; /* Espacinho entre botões */
+}
+
+.nav-btn:hover, .nav-btn.active {
+  opacity: 1; /* Totalmente visível ao passar o mouse ou se estiver ativo */
+  transform: translateY(-2px); /* Efeito de "pulo" */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra para destacar */
+}
+
+/* Cores Vibrantes */
+
+/* Dashboard (Azul Escuro) */
+.btn-dashboard { background-color: #343a40; }
+
+/* Pacientes (Azul Royal) */
+.btn-pacientes { background-color: #0d6efd; }
+
+/* Agenda (Roxo) */
+.btn-agenda { background-color: #6610f2; }
+
+/* Avaliações (Laranja) */
+.btn-avaliacoes { background-color: #fd7e14; }
+
+/* Evoluções (Verde Água) */
+.btn-evolucoes { background-color: #20c997; }
+
+/* Financeiro (Verde) */
+.btn-financeiro { background-color: #198754; }
+
+/* Sair Mobile (Vermelho) */
+.btn-sair-mobile { background-color: #dc3545; }
+
+/* Ajuste para a logo ficar centralizada sem o ícone */
+.logo-area {
+    justify-content: center;
+}
