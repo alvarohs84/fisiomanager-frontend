@@ -48,12 +48,16 @@ function router() {
       break;
 
     case "configuracoes":
-      renderConfiguracoes(); // <--- Rota Nova
+      renderConfiguracoes(); // Use o nome certo aqui também
       break;
-      
     // Casos antigos mantidos por segurança ou removidos se não usar mais
-    case "avaliacoes": renderAvaliacoes(); break;
-    case "evolucoes": renderEvolucoes(); break;
+    
+    case "avaliacoes": 
+      renderAvaliacoes(); 
+      break;
+    
+    case "evolucoes": 
+      renderEvolucoes(); break;
 
     default:
       navigate("dashboard");
