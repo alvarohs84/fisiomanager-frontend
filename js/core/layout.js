@@ -5,7 +5,7 @@ export function renderLayout(contentHTML) {
   const user = getUser();
   const username = user ? user.username : "Usuário";
 
-  // HTML da Navbar (Verificado: Sem "F" solto)
+  // HTML da Navbar
   const navHTML = `
     <header class="main-header">
       <div class="logo-area">
@@ -17,9 +17,11 @@ export function renderLayout(contentHTML) {
         <button onclick="window.navegar('dashboard')" class="nav-btn btn-dashboard">Dashboard</button>
         <button onclick="window.navegar('pacientes')" class="nav-btn btn-pacientes">Pacientes</button>
         <button onclick="window.navegar('agenda')" class="nav-btn btn-agenda">Agenda</button>
-        <button onclick="window.navegar('avaliacoes')" class="nav-btn btn-avaliacoes">Avaliações</button>
-        <button onclick="window.navegar('evolucoes')" class="nav-btn btn-evolucoes">Evoluções</button>
+        
+        <button onclick="window.navegar('prontuario')" class="nav-btn" style="background-color: #e83e8c; color: white;">Prontuário</button>
+        
         <button onclick="window.navegar('financeiro')" class="nav-btn btn-financeiro">Financeiro</button>
+        
         <button id="btnSairMobile" class="nav-btn btn-sair-mobile">Sair</button>
       </nav>
 

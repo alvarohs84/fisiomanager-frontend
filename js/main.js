@@ -7,14 +7,13 @@ import { renderLogin } from "./pages/login.js";
 import { renderDashboard } from "./pages/dashboard.js";
 import { renderPacientes } from "./pages/pacientes.js";
 import { renderAgenda } from "./pages/agenda.js";
-import { renderEvolucoes } from "./pages/evolucoes.js";
 import { renderFinanceiro } from "./pages/financeiro.js";
-import { renderAvaliacoes } from "./pages/avaliacoes.js"; // Importação correta
+import { renderProntuario } from "./pages/prontuario.js"; // <--- Importe Novo
 
 function router() {
   const rota = window.location.hash.slice(1) || "dashboard";
-  console.log("Tentando ir para a rota:", rota);
-  
+  console.log("Rota:", rota);
+
   if (!isLogged()) {
     renderLogin();
     return;
@@ -38,12 +37,8 @@ function router() {
       renderAgenda();
       break;
 
-    case "avaliacoes":
-      renderAvaliacoes(); // <--- Apenas chama a função nova
-      break;
-
-    case "evolucoes":
-      renderEvolucoes();
+    case "prontuario": // <--- Rota Nova Unificada
+      renderProntuario();
       break;
 
     case "financeiro":
@@ -51,16 +46,7 @@ function router() {
       break;
 
     case "configuracoes":
-      renderLayout(`
-        <div class="container">
-            <h2>⚙️ Configurações</h2>
-            <div class="card" style="margin-top: 20px; text-align: center; padding: 40px; color: #777;">
-                <div style="font-size: 3rem; margin-bottom: 10px;">🛠️</div>
-                <h3>Em Desenvolvimento</h3>
-                <p>Em breve você poderá alterar dados da clínica e senhas aqui.</p>
-            </div>
-        </div>
-      `);
+      renderLayout(`<div class="container"><h2>⚙️ Configurações</h2><div class="card" style="padding:40px; text-align:center;"><h3>Em breve</h3></div></div>`);
       break;
 
     default:
