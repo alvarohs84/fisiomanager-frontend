@@ -13,7 +13,8 @@ import { renderAvaliacoes } from "./pages/avaliacoes.js"; // Importação corret
 
 function router() {
   const rota = window.location.hash.slice(1) || "dashboard";
-
+  console.log("Tentando ir para a rota:", rota);
+  
   if (!isLogged()) {
     renderLogin();
     return;
