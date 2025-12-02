@@ -14,13 +14,13 @@ export function renderLayout(contentHTML) {
       </div>
 
       <nav class="nav-menu">
-        <button onclick="window.navegar('dashboard')" class="nav-btn btn-dashboard">Dashboard</button>
-        <button onclick="window.navegar('pacientes')" class="nav-btn btn-pacientes">Pacientes</button>
-        <button onclick="window.navegar('agenda')" class="nav-btn btn-agenda">Agenda</button>
+        <a href="#dashboard" class="nav-btn btn-dashboard">Dashboard</a>
+        <a href="#pacientes" class="nav-btn btn-pacientes">Pacientes</a>
+        <a href="#agenda" class="nav-btn btn-agenda">Agenda</a>
         
-        <button onclick="window.navegar('prontuario')" class="nav-btn" style="background-color: #e83e8c; color: white;">Prontuário</button>
+        <a href="#prontuario" class="nav-btn" style="background-color: #e83e8c;">Prontuário</a>
         
-        <button onclick="window.navegar('financeiro')" class="nav-btn btn-financeiro">Financeiro</button>
+        <a href="#financeiro" class="nav-btn btn-financeiro">Financeiro</a>
         
         <button id="btnSairMobile" class="nav-btn btn-sair-mobile">Sair</button>
       </nav>
@@ -38,8 +38,6 @@ export function renderLayout(contentHTML) {
 
   document.getElementById("app").innerHTML = navHTML;
 
-  window.navegar = (rota) => navigate(rota);
-
   // Lógica de Logout
   const logoutAction = () => {
     if (confirm("Deseja realmente sair?")) {
@@ -54,18 +52,23 @@ export function renderLayout(contentHTML) {
   const btnSairMobile = document.getElementById("btnSairMobile");
   if(btnSairMobile) btnSairMobile.addEventListener("click", logoutAction);
   
+  // Marca o botão atual como ativo (para ficar colorido mais forte)
   highlightActiveMenu();
 }
 
 function highlightActiveMenu() {
+    const hash = window.location.hash || "#dashboard";
     const buttons = document.querySelectorAll('.nav-btn');
+    
     buttons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            buttons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
+        // Remove de todos
+        btn.classList.remove('active');
+        
+        // Se o link do botão for igual ao hash da URL, ativa ele
+        if(btn.getAttribute('href') === hash) {
+            btn.classList.add('active');
+        }
     });
 }
-
 
 
