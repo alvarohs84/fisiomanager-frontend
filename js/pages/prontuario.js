@@ -12,19 +12,9 @@ export async function renderProntuario() {
         
         <div class="card" style="height: fit-content;">
           <h3>Paciente</h3>
-          <select id="selPaciente" style="width: 100%; margin-bottom: 15px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+          <select id="selPaciente" style="width: 100%; margin-bottom: 20px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
             <option value="">Carregando...</option>
           </select>
-
-          <div id="areaDiagnosticos" style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 20px; display:none; border: 1px solid #e9ecef;">
-            <label style="font-size:0.8rem; font-weight:bold; color:#0056b3;">Diagnóstico Médico:</label>
-            <textarea id="diagMedico" rows="2" class="u-full-width" style="font-size:0.85rem; border:1px solid #ccc;"></textarea>
-            
-            <label style="font-size:0.8rem; font-weight:bold; color:#0056b3; margin-top:5px;">Diag. Cinético-Funcional:</label>
-            <textarea id="diagFuncional" rows="3" class="u-full-width" style="font-size:0.85rem; border:1px solid #ccc;"></textarea>
-            
-            <button id="btnSalvarDiagnosticos" style="width:100%; margin-top:5px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; padding:5px; font-size:0.8rem;">Atualizar Diagnósticos</button>
-          </div>
 
           <hr style="margin-bottom: 20px;">
 
@@ -76,42 +66,13 @@ export async function renderProntuario() {
   renderLayout(html);
   await carregarPacientes();
 
-  // Eventos
-  document.getElementById("selPaciente").onchange = aoMudarPaciente;
+  document.getElementById("selPaciente").onchange = carregarTimeline;
   document.getElementById("btnNovoRegistro").onclick = abrirFormulario;
   document.getElementById("btnFecharCriacao").onclick = () => document.getElementById("areaCriacao").style.display = "none";
   document.getElementById("formProntuario").onsubmit = salvarRegistro;
-  document.getElementById("btnSalvarDiagnosticos").onclick = salvarDiagnosticosPaciente;
 }
 
-// --- FUNÇÕES DINÂMICAS ---
-window.addLinhaMRC = (prefixo) => {
-    const container = document.getElementById(`container-mrc-${prefixo}`);
-    const div = document.createElement('div');
-    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
-    div.innerHTML = `
-        <input type="text" name="${prefixo}_mrc_musculo[]" placeholder="Músculo" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;">
-        <select name="${prefixo}_mrc_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option><option value="Bilat">Bilat</option></select>
-        <select name="${prefixo}_mrc_grau[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
-        <button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>
-    `;
-    container.appendChild(div);
-};
-
-window.addLinhaADM = (prefixo) => {
-    const container = document.getElementById(`container-adm-${prefixo}`);
-    const div = document.createElement('div');
-    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
-    div.innerHTML = `
-        <input type="text" name="${prefixo}_adm_art[]" placeholder="Articulação" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;">
-        <select name="${prefixo}_adm_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option></select>
-        <input type="text" name="${prefixo}_adm_grau[]" placeholder="Grau" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;">
-        <button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>
-    `;
-    container.appendChild(div);
-};
-
-// --- LÓGICA ---
+// LÓGICA
 async function carregarPacientes() {
     try {
         const lista = await authFetch("/patients/");
@@ -119,40 +80,6 @@ async function carregarPacientes() {
         if (lista.length === 0) select.innerHTML = '<option value="">Sem pacientes</option>';
         else select.innerHTML = `<option value="">-- Selecione --</option>` + lista.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
     } catch(e) { showToast("Erro ao carregar pacientes", "error"); }
-}
-
-async function aoMudarPaciente() {
-    const id = document.getElementById("selPaciente").value;
-    if(!id) {
-        document.getElementById("areaDiagnosticos").style.display = "none";
-        document.getElementById("timeline").innerHTML = "";
-        return;
-    }
-
-    // 1. Carregar Diagnósticos
-    try {
-        const paciente = await authFetch(`/patients/${id}`);
-        document.getElementById("diagMedico").value = paciente.medical_diagnosis || "";
-        document.getElementById("diagFuncional").value = paciente.functional_diagnosis || "";
-        document.getElementById("areaDiagnosticos").style.display = "block";
-    } catch(e) { console.error(e); }
-
-    // 2. Carregar Timeline
-    carregarTimeline();
-}
-
-async function salvarDiagnosticosPaciente() {
-    const id = document.getElementById("selPaciente").value;
-    const med = document.getElementById("diagMedico").value;
-    const func = document.getElementById("diagFuncional").value;
-
-    try {
-        await authFetch(`/patients/${id}`, {
-            method: "PATCH",
-            body: JSON.stringify({ medical_diagnosis: med, functional_diagnosis: func })
-        });
-        showToast("Diagnósticos atualizados!", "success");
-    } catch(e) { showToast("Erro ao atualizar", "error"); }
 }
 
 async function carregarTimeline() {
@@ -182,63 +109,72 @@ async function carregarTimeline() {
 
         timeline.innerHTML = historico.map(item => {
             const dataFormatada = item.dataReal.toLocaleString('pt-BR');
-            const itemString = encodeURIComponent(JSON.stringify(item));
+            const ehEvolucao = item.tipo === 'Evolução';
+            const itemString = encodeURIComponent(JSON.stringify(item)); // Para PDF
             
-            if (item.tipo === 'Evolução') {
-                let detalhes = `<p style="white-space:pre-wrap; color:#333; margin-bottom:10px;">${item.description}</p>`;
+            let conteudo = "";
+            if (ehEvolucao) {
+                // 1. Texto da evolução
+                conteudo = `<p style="white-space: pre-wrap; color: #333; margin-bottom:10px;">${item.description}</p>`;
                 
+                // 2. Dados Extras (EVA, MRC, ADM) - CORREÇÃO AQUI
                 if (item.content) {
                     const c = item.content;
+                    
+                    // Helper para renderizar um bloco (Pré ou Pós)
                     const renderBloco = (titulo, dados) => {
                         if (!dados) return "";
-                        let html = `<div style="flex:1; background:white; padding:8px; border-radius:4px; border:1px solid #eee;">
-                            <strong style="color:#555;">${titulo}</strong><hr style="margin:5px 0;">`;
+                        let html = `<div style="flex:1; background:white; padding:8px; border-radius:4px; border:1px solid #eee; font-size:0.85rem;">
+                            <strong style="color:#555; text-transform:uppercase;">${titulo}</strong><hr style="margin:5px 0;">`;
                         
-                        if(dados.eva) html += `<div>Dor (EVA): <span style="font-weight:bold; color:${dados.eva > 5 ? 'red':'green'}">${dados.eva}</span> <small>(${dados.eva_local || ''})</small></div>`;
-                        
-                        if(dados.mrc && dados.mrc.length) {
-                            html += `<div style="margin-top:5px;"><em style="font-size:0.8rem">Força:</em><br>${dados.mrc.map(m => `- ${m.m} (${m.l}): G${m.g}`).join('<br>')}</div>`;
+                        // EVA
+                        if(dados.eva) {
+                             html += `<div>Dor (EVA): <span style="font-weight:bold; color:${dados.eva > 5 ? 'red':'green'}">${dados.eva}</span> <small>(${dados.eva_local || ''})</small></div>`;
                         }
-                        if(dados.adm && dados.adm.length) {
-                            html += `<div style="margin-top:5px;"><em style="font-size:0.8rem">ADM:</em><br>${dados.adm.map(a => `- ${a.a} (${a.l}): ${a.g}`).join('<br>')}</div>`;
+                        // FORÇA
+                        if(dados.mrc && dados.mrc.length > 0) {
+                            html += `<div style="margin-top:5px;"><em style="color:#007bff">Força:</em><br>${dados.mrc.map(m => `- ${m.m} (${m.l}): G${m.g}`).join('<br>')}</div>`;
+                        }
+                        // ADM
+                        if(dados.adm && dados.adm.length > 0) {
+                            html += `<div style="margin-top:5px;"><em style="color:#007bff">ADM:</em><br>${dados.adm.map(a => `- ${a.a} (${a.l}): ${a.g}`).join('<br>')}</div>`;
                         }
                         return html + "</div>";
                     };
-                    detalhes += `<div style="display:flex; gap:10px; background:#f8f9fa; padding:10px; border-radius:6px; flex-wrap:wrap;">
-                        ${renderBloco("PRÉ", c.pre)}
-                        ${renderBloco("PÓS", c.pos)}
+
+                    // Renderiza os dois blocos lado a lado
+                    conteudo += `<div style="display:flex; gap:10px; background:#f8f9fa; padding:10px; border-radius:6px; flex-wrap:wrap;">
+                        ${renderBloco("PRÉ SESSÃO", c.pre)}
+                        ${renderBloco("PÓS SESSÃO", c.pos)}
                     </div>`;
                 }
-
-                return `
-                    <div class="card" style="margin-bottom:15px; padding:15px; border-left:5px solid #28a745; position:relative;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <strong style="color:#28a745;">EVOLUÇÃO DIÁRIA</strong>
-                            <div>
-                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir">🖨️</button>
-                                <button onclick="window.deletarItemProntuario('evolutions', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;" title="Excluir">🗑️</button>
-                            </div>
-                        </div>
-                        <small style="color:#888;">${dataFormatada}</small>
-                        <div style="margin-top:10px;">${detalhes}</div>
-                    </div>`;
             } else {
-                return `
-                    <div class="card" style="margin-bottom:15px; padding:15px; border-left:5px solid #007bff; position:relative;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <strong style="color:#007bff;">FICHA: ${item.specialty}</strong>
-                            <div>
-                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir">🖨️</button>
-                                <button onclick="window.deletarItemProntuario('assessments', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;" title="Excluir">🗑️</button>
-                            </div>
-                        </div>
-                        <small style="color:#888; display:block; margin-bottom:10px;">${dataFormatada}</small>
-                        <button type="button" onclick="window.verFicha('${itemString}')" style="background:#e7f1ff; color:#0056b3; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">📄 Ver Ficha Completa</button>
-                    </div>`;
+                // É Ficha
+                const dadosFicha = encodeURIComponent(JSON.stringify(item));
+                conteudo = `<button type="button" onclick="window.verFicha('${dadosFicha}')" style="background:#e7f1ff; color:#0056b3; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">📄 Ver Ficha Completa</button>`;
             }
+
+            const endpointDelete = ehEvolucao ? 'evolutions' : 'assessments';
+
+            return `
+                <div class="card" style="margin-bottom: 15px; padding: 15px; border-left: 5px solid ${ehEvolucao ? '#28a745' : '#007bff'}; position:relative;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <strong style="color:${ehEvolucao ? '#28a745' : '#007bff'}; text-transform:uppercase; font-size:0.85rem;">${item.tipo}</strong>
+                        <div>
+                            <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir PDF">🖨️</button>
+                            <button onclick="window.deletarItemProntuario('${endpointDelete}', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;" title="Excluir">🗑️</button>
+                        </div>
+                    </div>
+                    <small style="color:#888; display:block; margin-bottom:10px;">${dataFormatada}</small>
+                    ${conteudo}
+                </div>
+            `;
         }).join("");
 
-    } catch(e) { console.error(e); }
+    } catch(e) {
+        console.error(e);
+        timeline.innerHTML = "Erro ao carregar histórico.";
+    }
 }
 
 function abrirFormulario() {
@@ -252,7 +188,7 @@ function abrirFormulario() {
     document.getElementById("tituloCriacao").innerText = tipo === 'Evolucao' ? "Nova Evolução" : "Ficha: " + tipo;
 
     if (tipo === 'Evolucao') {
-        // FORMULÁRIO DE EVOLUÇÃO AVANÇADA
+        // FORMULÁRIO DE EVOLUÇÃO AVANÇADA (PRÉ E PÓS)
         const renderSecao = (titulo, prefixo) => `
             <div style="flex:1; border:1px solid #ddd; padding:10px; border-radius:6px; min-width:250px;">
                 <h5 style="color:#007bff; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px;">${titulo}</h5>
@@ -299,6 +235,7 @@ async function salvarRegistro(e) {
     try {
         if (tipo === 'Evolucao') {
             const desc = formData.get("descricao");
+            
             // Extrai dados dinâmicos
             const getListas = (prefixo) => {
                 const musculos = formData.getAll(`${prefixo}_mrc_musculo[]`);
@@ -307,23 +244,43 @@ async function salvarRegistro(e) {
                 const arts = formData.getAll(`${prefixo}_adm_art[]`);
                 const ladosAdm = formData.getAll(`${prefixo}_adm_lado[]`);
                 const grausAdm = formData.getAll(`${prefixo}_adm_grau[]`);
+
                 const mrc = musculos.map((m, i) => ({ m, l: ladosMrc[i], g: grausMrc[i] })).filter(x => x.m);
                 const adm = arts.map((a, i) => ({ a, l: ladosAdm[i], g: grausAdm[i] })).filter(x => x.a);
-                return { eva: formData.get(`${prefixo}_eva`), eva_local: formData.get(`${prefixo}_eva_local`), mrc, adm };
+
+                return {
+                    eva: formData.get(`${prefixo}_eva`),
+                    eva_local: formData.get(`${prefixo}_eva_local`),
+                    mrc,
+                    adm
+                };
             };
-            const dadosExtras = { pre: getListas("pre"), pos: getListas("pos") };
+
+            const dadosExtras = {
+                pre: getListas("pre"),
+                pos: getListas("pos")
+            };
 
             await authFetch("/evolutions/", {
                 method: "POST",
-                body: JSON.stringify({ patient_id: pacienteId, description: desc, content: dadosExtras })
+                body: JSON.stringify({ 
+                    patient_id: pacienteId, 
+                    description: desc,
+                    content: dadosExtras
+                })
             });
         } else {
             const conteudoJSON = Object.fromEntries(formData.entries());
             await authFetch("/assessments/", {
                 method: "POST",
-                body: JSON.stringify({ patient_id: pacienteId, specialty: tipo, content: conteudoJSON })
+                body: JSON.stringify({
+                    patient_id: pacienteId,
+                    specialty: tipo,
+                    content: conteudoJSON
+                })
             });
         }
+
         showToast("Registro salvo!", "success");
         document.getElementById("areaCriacao").style.display = "none";
         carregarTimeline(); 
@@ -331,7 +288,33 @@ async function salvarRegistro(e) {
     } catch (e) { showToast("Erro ao salvar.", "error"); }
 }
 
-// FUNÇÃO DE IMPRESSÃO (Mantida)
+// --- FUNÇÕES AUXILIARES ---
+window.addLinhaMRC = (prefixo) => {
+    const container = document.getElementById(`container-mrc-${prefixo}`);
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
+    div.innerHTML = `
+        <input type="text" name="${prefixo}_mrc_musculo[]" placeholder="Músculo" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;">
+        <select name="${prefixo}_mrc_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option><option value="Bilat">Bilat</option></select>
+        <select name="${prefixo}_mrc_grau[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+        <button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>
+    `;
+    container.appendChild(div);
+};
+
+window.addLinhaADM = (prefixo) => {
+    const container = document.getElementById(`container-adm-${prefixo}`);
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
+    div.innerHTML = `
+        <input type="text" name="${prefixo}_adm_art[]" placeholder="Articulação" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;">
+        <select name="${prefixo}_adm_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option></select>
+        <input type="text" name="${prefixo}_adm_grau[]" placeholder="Grau" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;">
+        <button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>
+    `;
+    container.appendChild(div);
+};
+
 window.imprimirRegistro = (jsonString) => {
     const item = JSON.parse(decodeURIComponent(jsonString));
     const selPaciente = document.getElementById("selPaciente");
@@ -340,10 +323,10 @@ window.imprimirRegistro = (jsonString) => {
     
     let corpoRelatorio = "";
     if (item.tipo === 'Evolução') {
-        corpoRelatorio = `<p><strong>Descrição:</strong><br>${item.description}</p>`;
-        if(item.content) {
-             // Lógica simplificada de impressão dos dados pré/pós (pode ser expandida)
-             corpoRelatorio += "<p><i>(Dados detalhados de força/adm salvos no sistema)</i></p>";
+        corpoRelatorio = `<p><strong>Descrição:</strong><br>${item.description.replace(/\n/g, '<br>')}</p>`;
+        // Aqui adicionamos os dados avançados ao PDF também
+        if(item.content && (item.content.pre || item.content.pos)) {
+            corpoRelatorio += `<hr><p><i>Dados detalhados de Pré e Pós disponíveis no sistema.</i></p>`;
         }
     } else {
         corpoRelatorio += "<ul>";
@@ -388,7 +371,9 @@ window.deletarItemProntuario = async (endpoint, id) => {
     if(!confirm("Apagar este registro?")) return;
     try {
         await authFetch(`/${endpoint}/${id}`, { method: "DELETE" });
-        showToast("Apagado.", "info");
+        showToast("Registro apagado.", "info");
         carregarTimeline();
-    } catch(e) { showToast("Erro ao apagar.", "error"); }
+    } catch(e) {
+        showToast("Erro ao apagar.", "error");
+    }
 };
