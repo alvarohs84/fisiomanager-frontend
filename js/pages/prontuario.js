@@ -24,7 +24,15 @@ export async function renderProntuario() {
             <option value="Evolucao">📝 Evolução Diária (Sessão)</option>
             <option value="Ortopedica">🦴 Ficha Ortopédica</option>
             <option value="NeuroAdulto">🧠 Ficha Neuro Adulto</option>
-            </select>
+            <option value="NeuroPediatrica">👶 Ficha Neuro Pediátrica</option>
+            <option value="Respiratoria">🫁 Ficha Respiratória</option>
+            <option value="Cardiovascular">❤️ Ficha Cardiovascular</option>
+            <option value="Uroginecologica">🚺 Ficha Uroginecológica</option>
+            <option value="Dermatofuncional">💆‍♀️ Ficha Dermatofuncional</option>
+            <option value="Esportiva">🏅 Ficha Esportiva</option>
+            <option value="Geriatrica">👴 Ficha Geriátrica</option>
+            <option value="Ergonomia">🪑 Ficha Ergonomia</option>
+          </select>
 
           <button id="btnNovoRegistro" class="btn-primary" style="width: 100%;">+ Criar</button>
         </div>
@@ -105,15 +113,15 @@ async function carregarTimeline() {
             
             let conteudo = "";
             if (ehEvolucao) {
-                // Monta o visual da evolução com os dados extras (se houver)
+                // EXIBIÇÃO NO HISTÓRICO (Texto + Dados Extras)
                 conteudo = `<p style="white-space: pre-wrap; color: #333; margin-bottom:10px;">${item.description}</p>`;
                 
                 if (item.content) {
                     const c = item.content;
-                    conteudo += `<div style="background:#f1f3f5; padding:10px; border-radius:6px; font-size:0.9rem;">`;
-                    if(c.eva) conteudo += `<strong>Dor (EVA):</strong> <span style="color:${c.eva > 5 ? 'red' : 'green'}">${c.eva}</span>/10 <br>`;
-                    if(c.goniometria) conteudo += `<strong>ADM:</strong> ${c.goniometria} <br>`;
-                    if(c.mrc) conteudo += `<strong>Força (MRC):</strong> ${c.mrc}`;
+                    conteudo += `<div style="background:#f8f9fa; padding:10px; border-radius:6px; font-size:0.9rem; border:1px solid #eee;">`;
+                    if(c.eva) conteudo += `<strong>🔴 Dor (EVA):</strong> <span style="font-weight:bold;">${c.eva}</span>/10 <br>`;
+                    if(c.goniometria) conteudo += `<strong>📐 ADM:</strong> ${c.goniometria} <br>`;
+                    if(c.mrc) conteudo += `<strong>💪 Força (MRC):</strong> ${c.mrc}`;
                     conteudo += `</div>`;
                 }
             } else {
@@ -155,27 +163,30 @@ function abrirFormulario() {
         // --- FORMULÁRIO DE EVOLUÇÃO COM DADOS EXTRAS ---
         container.innerHTML = `
             <label>Descrição da Sessão (Obrigatório):</label>
-            <textarea name="descricao" rows="4" class="u-full-width" placeholder="Ex: Cinesioterapia, Terapia manual..." required style="padding:10px; border-radius:6px; border:1px solid #ddd;"></textarea>
+            <textarea name="descricao" rows="4" class="u-full-width" placeholder="Ex: Cinesioterapia, Terapia manual, Eletro..." required style="padding:10px; border-radius:6px; border:1px solid #ddd;"></textarea>
             
-            <hr style="margin: 15px 0;">
-            <h5 style="font-size:0.9rem; color:#555; margin-bottom:10px;">Dados Objetivos (Opcional)</h5>
+            <hr style="margin: 15px 0; border-top: 1px dashed #ccc;">
+            <h5 style="font-size:0.95rem; color:#007bff; margin-bottom:15px;">Dados Objetivos da Sessão (Opcional)</h5>
             
-            <label>Dor (EVA 0-10): <span id="valEva" style="font-weight:bold;">-</span></label>
+            <label>Dor (Escala EVA 0-10): <span id="valEva" style="font-weight:bold; color:#dc3545;">0</span></label>
             <input type="range" name="eva" min="0" max="10" value="0" oninput="document.getElementById('valEva').innerText = this.value" style="width:100%;">
             
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <div style="flex:1;">
+            <div style="display:flex; gap:15px; margin-top:10px; flex-wrap: wrap;">
+                <div style="flex:1; min-width: 150px;">
                     <label>Goniometria (ADM):</label>
-                    <input type="text" name="goniometria" placeholder="Ex: Joelho D 110º" style="width:100%;">
+                    <input type="text" name="goniometria" placeholder="Ex: Ombro Flex 160º" style="width:100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
-                <div style="flex:1;">
-                    <label>Força (MRC):</label>
-                    <input type="text" name="mrc" placeholder="Ex: Quadríceps G4" style="width:100%;">
+                <div style="flex:1; min-width: 150px;">
+                    <label>Força Muscular (MRC):</label>
+                    <input type="text" name="mrc" placeholder="Ex: Quadríceps G4" style="width:100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
                 </div>
             </div>
         `;
     } else {
-        container.innerHTML = templates[tipo] || "<p>Erro: Template não encontrado.</p>";
+        // Fichas Completas
+        // Aqui ele busca o HTML do arquivo templates.js
+        // Se a chave (ex: "Respiratoria") existir lá, carrega.
+        container.innerHTML = templates[tipo] || `<p style="color:red">Erro: O formulário de ${tipo} ainda não foi criado no arquivo de templates.</p>`;
     }
     document.getElementById("areaCriacao").scrollIntoView({ behavior: 'smooth' });
 }
@@ -229,7 +240,7 @@ async function salvarRegistro(e) {
     }
 }
 
-// ... (Funções globais verFicha e deletar iguais ao anterior) ...
+// Funções Globais
 window.verFicha = (jsonString) => {
     const item = JSON.parse(decodeURIComponent(jsonString));
     const container = document.getElementById("conteudoFormulario");
