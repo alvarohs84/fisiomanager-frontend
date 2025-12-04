@@ -3,18 +3,19 @@ import { authFetch, getUser } from "../core/auth.js";
 import { showToast } from "../core/ui.js";
 
 export function renderConfiguracoes() {
-  // Verifica se é admin para mostrar a aba Equipe
-  const user = getUser(); // Precisamos implementar isso melhor no auth.js depois
-  const isAdmin = true; // Por enquanto libera visualmente, o backend bloqueia se não for
-
+  const user = getUser();
+  
+  // Verifica se é admin para mostrar avisos ou liberar ações (o backend bloqueia de qualquer jeito)
+  // Supondo que o token traga o role, ou a gente confia na resposta da API
+  
   const html = `
     <div class="container">
-      <h2>⚙️ Configurações</h2>
+      <h2>⚙️ Configurações e Equipe</h2>
       
       <div class="tab-container" style="margin-top:20px;">
-        <button class="tab-btn active" onclick="window.mudarAbaConf(1)">🏥 Clínica</button>
-        <button class="tab-btn" onclick="window.mudarAbaConf(2)">🔒 Minha Senha</button>
-        <button class="tab-btn" onclick="window.mudarAbaConf(3)">👥 Equipe</button>
+        <div class="tab-btn active" onclick="window.mudarAbaConf(1)">🏥 Clínica</div>
+        <div class="tab-btn" onclick="window.mudarAbaConf(2)">🔒 Minha Senha</div>
+        <div class="tab-btn" onclick="window.mudarAbaConf(3)">👥 Equipe (Multi-usuário)</div>
       </div>
 
       <div class="grid-mobile" style="margin-top: 20px;">
@@ -22,17 +23,13 @@ export function renderConfiguracoes() {
         <div id="conf-tab-1" class="tab-content active card">
           <h3>Dados da Clínica</h3>
           <form id="formClinica">
-            <label>Nome da Clínica</label>
-            <input type="text" id="confNome" class="u-full-width">
-            <label>Endereço</label>
-            <input type="text" id="confEnd" class="u-full-width">
+            <label>Nome da Clínica</label><input type="text" id="confNome" class="u-full-width">
+            <label>Endereço</label><input type="text" id="confEnd" class="u-full-width">
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;"><label>Telefone</label><input type="text" id="confTel" class="u-full-width"></div>
                 <div style="flex:1;"><label>Resp. Técnico</label><input type="text" id="confResp" class="u-full-width"></div>
             </div>
-            <div style="text-align: right; margin-top: 15px;">
-                <button type="submit" class="btn-primary">Salvar Dados</button>
-            </div>
+            <button type="submit" class="btn-primary" style="margin-top:15px;">Salvar Dados</button>
           </form>
         </div>
 
@@ -42,25 +39,23 @@ export function renderConfiguracoes() {
             <label>Senha Atual</label><input type="password" id="senhaAtual" class="u-full-width" required>
             <label>Nova Senha</label><input type="password" id="senhaNova" class="u-full-width" required>
             <label>Confirmar</label><input type="password" id="senhaConfirm" class="u-full-width" required>
-            <div style="text-align: right; margin-top: 15px;">
-                <button type="submit" class="btn-primary" style="background-color: #dc3545; border-color: #dc3545;">Alterar</button>
-            </div>
+            <button type="submit" class="btn-primary" style="margin-top:15px; background-color: #dc3545;">Alterar</button>
           </form>
         </div>
 
         <div id="conf-tab-3" class="tab-content card" style="display:none;">
           <h3>Gerenciar Equipe</h3>
-          <p style="color:#777; font-size:0.9rem;">Cadastre outros profissionais para acessar o sistema.</p>
+          <p style="color:#777; font-size:0.9rem; margin-bottom:20px;">Cadastre novos profissionais. Cada um terá seu login e senha.</p>
           
           <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #eee;">
-            <h5>Novo Usuário</h5>
+            <h5 style="color:#007bff; margin-bottom:10px;">Novo Usuário</h5>
             <form id="formNovoUsuario" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
-                <div style="flex:2; min-width:200px;">
+                <div style="flex:2; min-width:150px;">
                     <label>Nome Completo</label>
                     <input type="text" id="newNome" class="u-full-width" required>
                 </div>
                 <div style="flex:1; min-width:120px;">
-                    <label>Usuário (Login)</label>
+                    <label>Login</label>
                     <input type="text" id="newUser" class="u-full-width" required>
                 </div>
                 <div style="flex:1; min-width:120px;">
@@ -69,7 +64,7 @@ export function renderConfiguracoes() {
                 </div>
                 <div style="flex:1; min-width:120px;">
                     <label>Cargo</label>
-                    <select id="newRole" class="u-full-width">
+                    <select id="newRole" class="u-full-width" style="padding:10px;">
                         <option value="fisio">Fisioterapeuta</option>
                         <option value="recepcao">Recepção</option>
                         <option value="admin">Administrador</option>
@@ -80,10 +75,21 @@ export function renderConfiguracoes() {
           </div>
 
           <h4>Lista de Usuários</h4>
-          <table width="100%">
-            <thead><tr><th>Nome</th><th>Login</th><th>Cargo</th><th>Ação</th></tr></thead>
-            <tbody id="listaUsuarios"><tr><td colspan="4">Carregando...</td></tr></tbody>
-          </table>
+          <div style="overflow-x:auto;">
+            <table width="100%">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Login</th>
+                        <th>Cargo</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="listaUsuarios">
+                    <tr><td colspan="4">Carregando...</td></tr>
+                </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
@@ -99,11 +105,11 @@ export function renderConfiguracoes() {
   document.getElementById("formSenha").onsubmit = alterarSenha;
   document.getElementById("formNovoUsuario").onsubmit = criarUsuario;
 
-  // Carregar lista ao abrir (ou ao clicar na aba)
+  // Carrega a lista se clicar na aba de equipe
   carregarUsuarios();
 }
 
-// LÓGICA DE ABAS
+// --- LÓGICA GLOBAL DE ABAS ---
 window.mudarAbaConf = (n) => {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -112,7 +118,7 @@ window.mudarAbaConf = (n) => {
     if(btns[n-1]) btns[n-1].classList.add('active');
 };
 
-// LÓGICA EQUIPE
+// --- LÓGICA EQUIPE (API) ---
 async function carregarUsuarios() {
     const tbody = document.getElementById("listaUsuarios");
     try {
@@ -121,14 +127,18 @@ async function carregarUsuarios() {
             <tr>
                 <td>${u.full_name || '-'}</td>
                 <td><strong>${u.username}</strong></td>
-                <td><span style="background:#e7f1ff; padding:2px 8px; border-radius:10px; font-size:0.8rem;">${u.role}</span></td>
+                <td>
+                    <span style="background:${u.role==='admin'?'#dc3545':'#e7f1ff'}; color:${u.role==='admin'?'white':'#0056b3'}; padding:2px 8px; border-radius:10px; font-size:0.8rem;">
+                        ${u.role.toUpperCase()}
+                    </span>
+                </td>
                 <td>
                     ${u.username !== 'admin' ? `<button onclick="window.deletarUsuario(${u.id})" style="color:red; border:none; background:none; cursor:pointer;">🗑️</button>` : ''}
                 </td>
             </tr>
         `).join("");
     } catch(e) {
-        tbody.innerHTML = `<tr><td colspan="4" style="color:red;">Apenas admins podem ver isso.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#777;">Você precisa ser Admin para ver isso.</td></tr>`;
     }
 }
 
@@ -146,24 +156,24 @@ async function criarUsuario(e) {
             method: "POST",
             body: JSON.stringify(payload)
         });
-        showToast("Usuário criado!", "success");
+        showToast("Usuário criado com sucesso!", "success");
         document.getElementById("formNovoUsuario").reset();
         carregarUsuarios();
     } catch(e) {
-        showToast("Erro ao criar (Talvez usuário já exista ou você não é admin).", "error");
+        showToast("Erro: Usuário já existe ou acesso negado.", "error");
     }
 }
 
 window.deletarUsuario = async (id) => {
-    if(!confirm("Remover este usuário?")) return;
+    if(!confirm("Remover este usuário do sistema?")) return;
     try {
         await authFetch(`/users/${id}`, { method: "DELETE" });
-        showToast("Removido.", "info");
+        showToast("Usuário removido.", "info");
         carregarUsuarios();
     } catch(e) { showToast("Erro ao remover.", "error"); }
 };
 
-// LÓGICA CLÍNICA E SENHA (MANTIDA)
+// --- LÓGICA CLÍNICA (LOCALSTORAGE) ---
 function carregarDadosClinica() {
     const dados = localStorage.getItem("fisio_config_clinica");
     if (dados) {
@@ -182,14 +192,17 @@ function salvarClinica(e) {
         telefone: document.getElementById("confTel").value,
         resp: document.getElementById("confResp").value
     }));
-    showToast("Salvo!", "success");
+    showToast("Dados salvos!", "success");
 }
+
+// --- LÓGICA SENHA ---
 async function alterarSenha(e) {
     e.preventDefault();
     const atual = document.getElementById("senhaAtual").value;
     const nova = document.getElementById("senhaNova").value;
     const confirm = document.getElementById("senhaConfirm").value;
     if (nova !== confirm) return showToast("Senhas não conferem.", "error");
+    
     try {
         await authFetch("/users/me/password", {
             method: "PATCH",
