@@ -2,8 +2,9 @@ import { renderLayout } from "../core/layout.js";
 import { authFetch } from "../core/auth.js";
 import { showToast } from "../core/ui.js";
 import { templates } from "./avaliacoes_templates.js";
+import { ativarVoz } from "../core/voice.js"; // Importa o módulo de voz
 
-let chartInstance = null; // Variável para guardar o gráfico
+let chartInstance = null;
 
 export async function renderProntuario() {
   const html = `
@@ -20,10 +21,14 @@ export async function renderProntuario() {
 
           <div id="areaDiagnosticos" style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 20px; display:none; border: 1px solid #e9ecef;">
             <label style="font-size:0.8rem; font-weight:bold; color:#0056b3;">Diagnóstico Médico:</label>
-            <textarea id="diagMedico" rows="2" class="u-full-width" style="font-size:0.85rem; border:1px solid #ccc;"></textarea>
+            <div style="display:flex; align-items:center;">
+                <textarea id="diagMedico" rows="2" class="u-full-width" style="font-size:0.85rem; border:1px solid #ccc;"></textarea>
+            </div>
             
             <label style="font-size:0.8rem; font-weight:bold; color:#0056b3; margin-top:5px;">Diag. Cinético-Funcional:</label>
-            <textarea id="diagFuncional" rows="3" class="u-full-width" style="font-size:0.85rem; border:1px solid #ccc;"></textarea>
+            <div style="display:flex; align-items:center;">
+                <textarea id="diagFuncional" rows="3" class="u-full-width" style="font-size:0.85rem; border:1px solid #ccc;"></textarea>
+            </div>
             
             <button id="btnSalvarDiagnosticos" style="width:100%; margin-top:5px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; padding:5px; font-size:0.8rem;">Atualizar Diagnósticos</button>
           </div>
@@ -93,36 +98,24 @@ export async function renderProntuario() {
   renderLayout(html);
   await carregarPacientes();
 
-  // Eventos
+  // Eventos Principais
   document.getElementById("selPaciente").onchange = aoMudarPaciente;
   document.getElementById("btnNovoRegistro").onclick = abrirFormulario;
   document.getElementById("btnFecharCriacao").onclick = () => document.getElementById("areaCriacao").style.display = "none";
   document.getElementById("formProntuario").onsubmit = salvarRegistro;
   document.getElementById("btnSalvarDiagnosticos").onclick = salvarDiagnosticosPaciente;
   
-  // Eventos do Gráfico
+  // Eventos Gráfico
   document.getElementById("btnVerGrafico").onclick = abrirModalGrafico;
   document.getElementById("btnFecharGrafico").onclick = () => document.getElementById("modalGrafico").style.display = "none";
+
+  // Ativa voz nos diagnósticos (elementos estáticos)
+  ativarVoz("diagMedico");
+  ativarVoz("diagFuncional");
 }
 
-// --- FUNÇÕES DINÂMICAS ---
-window.addLinhaMRC = (prefixo) => {
-    const container = document.getElementById(`container-mrc-${prefixo}`);
-    const div = document.createElement('div');
-    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
-    div.innerHTML = `<input type="text" name="${prefixo}_mrc_musculo[]" placeholder="Músculo" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;"><select name="${prefixo}_mrc_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option><option value="Bilat">Bilat</option></select><select name="${prefixo}_mrc_grau[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select><button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>`;
-    container.appendChild(div);
-};
-
-window.addLinhaADM = (prefixo) => {
-    const container = document.getElementById(`container-adm-${prefixo}`);
-    const div = document.createElement('div');
-    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
-    div.innerHTML = `<input type="text" name="${prefixo}_adm_art[]" placeholder="Articulação" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;"><select name="${prefixo}_adm_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option></select><input type="text" name="${prefixo}_adm_grau[]" placeholder="Grau" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>`;
-    container.appendChild(div);
-};
-
 // --- LÓGICA ---
+
 async function carregarPacientes() {
     try {
         const lista = await authFetch("/patients/");
@@ -147,7 +140,7 @@ async function aoMudarPaciente() {
         document.getElementById("diagMedico").value = paciente.medical_diagnosis || "";
         document.getElementById("diagFuncional").value = paciente.functional_diagnosis || "";
         document.getElementById("areaDiagnosticos").style.display = "block";
-        document.getElementById("btnVerGrafico").style.display = "block"; // Mostra o botão
+        document.getElementById("btnVerGrafico").style.display = "block";
     } catch(e) { console.error(e); }
 
     carregarTimeline();
@@ -198,18 +191,19 @@ async function carregarTimeline() {
             
             if (item.tipo === 'Evolução') {
                 let conteudo = `<p style="white-space: pre-wrap; color: #333; margin-bottom:10px;">${item.description}</p>`;
+                
                 if (item.content) {
                     const c = item.content;
                     const renderBloco = (titulo, dados) => {
                         if (!dados) return "";
                         let html = `<div style="flex:1; background:white; padding:8px; border-radius:4px; border:1px solid #eee; font-size:0.85rem;">
-                            <strong style="color:#555;">${titulo}</strong><hr style="margin:5px 0;">`;
+                            <strong style="color:#555; text-transform:uppercase;">${titulo}</strong><hr style="margin:5px 0;">`;
                         if(dados.eva) html += `<div>Dor: <span style="font-weight:bold; color:${dados.eva > 5 ? 'red':'green'}">${dados.eva}</span> <small>(${dados.eva_local || ''})</small></div>`;
                         if(dados.mrc && dados.mrc.length) html += `<div>Força: ${dados.mrc.map(m=>`${m.m} G${m.g}`).join(', ')}</div>`;
                         if(dados.adm && dados.adm.length) html += `<div>ADM: ${dados.adm.map(a=>`${a.a} ${a.g}`).join(', ')}</div>`;
                         return html + "</div>";
                     };
-                    conteudo += `<div style="display:flex; gap:10px; background:#f8f9fa; padding:10px; border-radius:6px; flex-wrap:wrap;">${renderBloco("PRÉ", c.pre)}${renderBloco("PÓS", c.pos)}</div>`;
+                    conteudo += `<div style="display:flex; gap:10px; background:#f8f9fa; padding:10px; border-radius:6px; flex-wrap:wrap;">${renderBloco("PRÉ SESSÃO", c.pre)}${renderBloco("PÓS SESSÃO", c.pos)}</div>`;
                 }
 
                 return `
@@ -217,8 +211,8 @@ async function carregarTimeline() {
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <strong style="color:#28a745;">EVOLUÇÃO DIÁRIA</strong>
                             <div>
-                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;">🖨️</button>
-                                <button onclick="window.deletarItemProntuario('evolutions', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;">🗑️</button>
+                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir PDF">🖨️</button>
+                                <button onclick="window.deletarItemProntuario('evolutions', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;" title="Excluir">🗑️</button>
                             </div>
                         </div>
                         <small style="color:#888; display:block; margin-bottom:10px;">${dataFormatada}</small>
@@ -230,7 +224,7 @@ async function carregarTimeline() {
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <strong style="color:#007bff;">FICHA: ${item.specialty}</strong>
                             <div>
-                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;">🖨️</button>
+                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir PDF">🖨️</button>
                                 <button onclick="window.deletarItemProntuario('assessments', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;">🗑️</button>
                             </div>
                         </div>
@@ -241,82 +235,6 @@ async function carregarTimeline() {
         }).join("");
 
     } catch(e) { console.error(e); timeline.innerHTML = "Erro ao carregar histórico."; }
-}
-
-// --- FUNÇÃO: GERAR GRÁFICO DE DOR ---
-async function abrirModalGrafico() {
-    const pacienteId = document.getElementById("selPaciente").value;
-    if(!pacienteId) return;
-
-    const modal = document.getElementById("modalGrafico");
-    modal.style.display = "block";
-
-    try {
-        // Busca apenas as evoluções
-        const evolucoes = await authFetch(`/evolutions/?patient_id=${pacienteId}`);
-        
-        // Ordena da mais antiga para a mais nova para o gráfico fazer sentido
-        evolucoes.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        // Filtra e extrai dados
-        const labels = [];
-        const dataPre = [];
-        const dataPos = [];
-
-        evolucoes.forEach(ev => {
-            if(ev.content && (ev.content.pre?.eva || ev.content.pos?.eva)) {
-                labels.push(new Date(ev.date).toLocaleDateString('pt-BR'));
-                dataPre.push(ev.content.pre?.eva || 0);
-                dataPos.push(ev.content.pos?.eva || 0);
-            }
-        });
-
-        const ctx = document.getElementById('chartCanvas').getContext('2d');
-        
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
-
-        chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Dor Pré-Sessão',
-                        data: dataPre,
-                        borderColor: '#dc3545', // Vermelho
-                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                        borderWidth: 2,
-                        fill: true
-                    },
-                    {
-                        label: 'Dor Pós-Sessão',
-                        data: dataPos,
-                        borderColor: '#28a745', // Verde
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        borderWidth: 2,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        max: 10,
-                        title: { display: true, text: 'Nível de Dor (EVA)' }
-                    }
-                }
-            }
-        });
-
-    } catch(e) {
-        showToast("Erro ao gerar gráfico", "error");
-        console.error(e);
-    }
 }
 
 function abrirFormulario() {
@@ -343,11 +261,17 @@ function abrirFormulario() {
                 <label style="font-weight:bold; font-size:0.8rem; margin-top:10px;">ADM (Goniometria): <button type="button" onclick="window.addLinhaADM('${prefixo}')" style="background:#e7f1ff; color:#007bff; border:none;">+ Add</button></label>
                 <div id="container-adm-${prefixo}"></div>
             </div>`;
+        
         container.innerHTML = `
             <label>Descrição Geral:</label>
-            <textarea name="descricao" rows="3" class="u-full-width" placeholder="Relato e conduta..." required style="padding:10px; border:1px solid #ddd; border-radius:6px;"></textarea>
+            <div style="display:flex; align-items:center;">
+                <textarea id="evoDescricao" name="descricao" rows="3" class="u-full-width" placeholder="Fale ou digite..." required style="padding:10px; border:1px solid #ddd; border-radius:6px;"></textarea>
+            </div>
             <div style="display:flex; gap:15px; margin-top:15px; flex-wrap:wrap;">${renderSecao("ANTES (Pré)", "pre")}${renderSecao("DEPOIS (Pós)", "pos")}</div>
         `;
+        // Ativa voz na descrição
+        ativarVoz("evoDescricao");
+        
     } else {
         container.innerHTML = templates[tipo] || "<p>Template não encontrado.</p>";
     }
@@ -394,23 +318,70 @@ async function salvarRegistro(e) {
     } catch (e) { showToast("Erro ao salvar.", "error"); }
 }
 
+// Funções Globais
+window.addLinhaMRC = (prefixo) => {
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
+    div.innerHTML = `<input type="text" name="${prefixo}_mrc_musculo[]" placeholder="Músculo" style="flex:2;"><select name="${prefixo}_mrc_lado[]" style="flex:1;"><option value="D">D</option><option value="E">E</option></select><select name="${prefixo}_mrc_grau[]" style="flex:1;"><option value="5">5</option><option value="4">4</option></select><button type="button" onclick="this.parentElement.remove()" style="color:red;">X</button>`;
+    document.getElementById(`container-mrc-${prefixo}`).appendChild(div);
+};
+window.addLinhaADM = (prefixo) => {
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
+    div.innerHTML = `<input type="text" name="${prefixo}_adm_art[]" placeholder="Articulação" style="flex:2;"><select name="${prefixo}_adm_lado[]" style="flex:1;"><option value="D">D</option><option value="E">E</option></select><input type="text" name="${prefixo}_adm_grau[]" placeholder="Grau" style="flex:1;"><button type="button" onclick="this.parentElement.remove()" style="color:red;">X</button>`;
+    document.getElementById(`container-adm-${prefixo}`).appendChild(div);
+};
+
+async function abrirModalGrafico() {
+    const pacienteId = document.getElementById("selPaciente").value;
+    if(!pacienteId) return;
+    document.getElementById("modalGrafico").style.display = "block";
+    
+    try {
+        const evolucoes = await authFetch(`/evolutions/?patient_id=${pacienteId}`);
+        evolucoes.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        const labels = [];
+        const dataPre = [];
+        const dataPos = [];
+
+        evolucoes.forEach(ev => {
+            if(ev.content && (ev.content.pre?.eva || ev.content.pos?.eva)) {
+                labels.push(new Date(ev.date).toLocaleDateString('pt-BR'));
+                dataPre.push(ev.content.pre?.eva || 0);
+                dataPos.push(ev.content.pos?.eva || 0);
+            }
+        });
+
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+        
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Dor Pré', data: dataPre, borderColor: '#dc3545', borderWidth: 2 },
+                    { label: 'Dor Pós', data: dataPos, borderColor: '#28a745', borderWidth: 2 }
+                ]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true, max: 10 } } }
+        });
+    } catch(e) { console.error(e); }
+}
+
 window.imprimirRegistro = (jsonString) => {
     const item = JSON.parse(decodeURIComponent(jsonString));
     const selPaciente = document.getElementById("selPaciente");
     const nomePaciente = selPaciente.options[selPaciente.selectedIndex].text;
     const conf = JSON.parse(localStorage.getItem("fisio_config_clinica") || "{}");
+    
     let corpoRelatorio = "";
     if (item.tipo === 'Evolução') {
         corpoRelatorio = `<p><strong>Descrição:</strong><br>${item.description.replace(/\n/g, '<br>')}</p>`;
         if(item.content) {
-            const renderB = (t, d) => {
-                if(!d) return "";
-                let h = `<div style="border:1px solid #ccc; padding:5px; margin-top:10px;"><strong>${t}</strong><br>EVA: ${d.eva || '-'}<br>`;
-                if(d.mrc) h+= `Força: ${d.mrc.map(m=>`${m.m} G${m.g}`).join(', ')}<br>`;
-                if(d.adm) h+= `ADM: ${d.adm.map(a=>`${a.a} ${a.g}`).join(', ')}`;
-                return h+"</div>";
-            }
-            corpoRelatorio += `<div style="display:flex; gap:10px;">${renderB("PRÉ", item.content.pre)}${renderB("PÓS", item.content.pos)}</div>`;
+             corpoRelatorio += `<hr><p><i>(Dados Pré/Pós disponíveis no sistema)</i></p>`;
+             // Você pode expandir aqui para imprimir os dados de força/adm se quiser
         }
     } else {
         corpoRelatorio += "<ul>";
@@ -419,6 +390,7 @@ window.imprimirRegistro = (jsonString) => {
         }
         corpoRelatorio += "</ul>";
     }
+
     const elemento = document.createElement('div');
     elemento.innerHTML = `
         <div style="padding: 20px; font-family: Arial;">
@@ -428,7 +400,8 @@ window.imprimirRegistro = (jsonString) => {
             </div>
             <h3>${item.tipo || item.specialty}</h3>
             <p><strong>Paciente:</strong> ${nomePaciente} | <strong>Data:</strong> ${new Date(item.date || item.dataReal).toLocaleString('pt-BR')}</p>
-            <hr>${corpoRelatorio}
+            <hr>
+            ${corpoRelatorio}
         </div>
     `;
     html2pdf().from(elemento).save(`Relatorio.pdf`);
