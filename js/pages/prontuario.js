@@ -25,7 +25,6 @@ export async function renderProntuario() {
             
             <button id="btnSalvarDiagnosticos" style="width:100%; margin-top:5px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; padding:5px; font-size:0.8rem;">Atualizar Diagnósticos</button>
           </div>
-
           <hr style="margin-bottom: 20px;">
 
           <h4>Novo Registro</h4>
@@ -77,14 +76,41 @@ export async function renderProntuario() {
   await carregarPacientes();
 
   // Eventos
-  document.getElementById("selPaciente").onchange = aoMudarPaciente; // <--- Função correta aqui
+  document.getElementById("selPaciente").onchange = aoMudarPaciente;
   document.getElementById("btnNovoRegistro").onclick = abrirFormulario;
   document.getElementById("btnFecharCriacao").onclick = () => document.getElementById("areaCriacao").style.display = "none";
   document.getElementById("formProntuario").onsubmit = salvarRegistro;
   document.getElementById("btnSalvarDiagnosticos").onclick = salvarDiagnosticosPaciente;
 }
 
-// --- FUNÇÕES DE LÓGICA ---
+// --- FUNÇÕES DINÂMICAS ---
+window.addLinhaMRC = (prefixo) => {
+    const container = document.getElementById(`container-mrc-${prefixo}`);
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
+    div.innerHTML = `
+        <input type="text" name="${prefixo}_mrc_musculo[]" placeholder="Músculo" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;">
+        <select name="${prefixo}_mrc_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option><option value="Bilat">Bilat</option></select>
+        <select name="${prefixo}_mrc_grau[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option><option value="0">0</option></select>
+        <button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>
+    `;
+    container.appendChild(div);
+};
+
+window.addLinhaADM = (prefixo) => {
+    const container = document.getElementById(`container-adm-${prefixo}`);
+    const div = document.createElement('div');
+    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
+    div.innerHTML = `
+        <input type="text" name="${prefixo}_adm_art[]" placeholder="Articulação" style="flex:2; padding:5px; border:1px solid #ddd; border-radius:4px;">
+        <select name="${prefixo}_adm_lado[]" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;"><option value="D">Dir</option><option value="E">Esq</option></select>
+        <input type="text" name="${prefixo}_adm_grau[]" placeholder="Grau" style="flex:1; padding:5px; border:1px solid #ddd; border-radius:4px;">
+        <button type="button" onclick="this.parentElement.remove()" style="color:red; border:none; background:none; font-weight:bold;">X</button>
+    `;
+    container.appendChild(div);
+};
+
+// --- LÓGICA ---
 
 async function carregarPacientes() {
     try {
@@ -110,7 +136,7 @@ async function aoMudarPaciente() {
         const paciente = await authFetch(`/patients/${id}`);
         document.getElementById("diagMedico").value = paciente.medical_diagnosis || "";
         document.getElementById("diagFuncional").value = paciente.functional_diagnosis || "";
-        document.getElementById("areaDiagnosticos").style.display = "block"; // <--- MOSTRA A CAIXINHA
+        document.getElementById("areaDiagnosticos").style.display = "block"; // <--- EXIBE A CAIXINHA
     } catch(e) { console.error(e); }
 
     // 2. Carregar Histórico
@@ -181,8 +207,8 @@ async function carregarTimeline() {
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <strong style="color:#28a745;">EVOLUÇÃO DIÁRIA</strong>
                             <div>
-                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;">🖨️</button>
-                                <button onclick="window.deletarItemProntuario('evolutions', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;">🗑️</button>
+                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir PDF">🖨️</button>
+                                <button onclick="window.deletarItemProntuario('evolutions', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;" title="Excluir">🗑️</button>
                             </div>
                         </div>
                         <small style="color:#888; display:block; margin-bottom:10px;">${dataFormatada}</small>
@@ -194,7 +220,7 @@ async function carregarTimeline() {
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <strong style="color:#007bff;">FICHA: ${item.specialty}</strong>
                             <div>
-                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;">🖨️</button>
+                                <button onclick="window.imprimirRegistro('${itemString}')" style="background:none; border:none; cursor:pointer; font-size:1.2rem; margin-right:10px;" title="Imprimir PDF">🖨️</button>
                                 <button onclick="window.deletarItemProntuario('assessments', ${item.id})" style="background:none; border:none; color:#dc3545; cursor:pointer;">🗑️</button>
                             </div>
                         </div>
@@ -204,7 +230,7 @@ async function carregarTimeline() {
             }
         }).join("");
 
-    } catch(e) { console.error(e); timeline.innerHTML = "Erro ao carregar."; }
+    } catch(e) { console.error(e); timeline.innerHTML = "Erro ao carregar histórico."; }
 }
 
 function abrirFormulario() {
@@ -239,15 +265,11 @@ function abrirFormulario() {
             <div style="display:flex; gap:15px; margin-top:15px; flex-wrap:wrap;">${renderSecao("ANTES (Pré)", "pre")}${renderSecao("DEPOIS (Pós)", "pos")}</div>
         `;
     } else {
-        // FORMULÁRIO FICHAS (TEMPLATES)
+        // FORMULÁRIO FICHAS
         const template = templates[tipo];
-        if (template) {
-            container.innerHTML = template;
-            // Ativa aba 1 se existir
-            setTimeout(() => { if(window.mudarAba) window.mudarAba(1); }, 100);
-        } else {
-            container.innerHTML = "<p style='color:red'>Erro: Template não encontrado. Verifique o arquivo templates.js</p>";
-        }
+        container.innerHTML = template || "<p style='color:red'>Erro: Template não encontrado.</p>";
+        // Se tiver abas, inicia na aba 1
+        setTimeout(() => { if(window.mudarAba) window.mudarAba(1); }, 100);
     }
     document.getElementById("areaCriacao").scrollIntoView({ behavior: 'smooth' });
 }
@@ -280,7 +302,8 @@ async function salvarRegistro(e) {
                 body: JSON.stringify({ patient_id: pacienteId, description: desc, content: dadosExtras })
             });
         } else {
-            // Lógica para tratar os dados complexos das fichas (checkboxes, etc)
+            // Lógica para Fichas (JSON)
+            // Tratamento especial para checkboxes múltiplos
             const conteudoJSON = {};
             formData.forEach((value, key) => {
                 if(conteudoJSON[key]) {
@@ -296,26 +319,84 @@ async function salvarRegistro(e) {
                 body: JSON.stringify({ patient_id: pacienteId, specialty: tipo, content: conteudoJSON })
             });
         }
-        showToast("Salvo com sucesso!", "success");
+        showToast("Registro salvo!", "success");
         document.getElementById("areaCriacao").style.display = "none";
         carregarTimeline(); 
     } catch (e) { showToast("Erro ao salvar.", "error"); }
 }
 
-// --- FUNÇÕES GLOBAIS NECESSÁRIAS ---
-window.addLinhaMRC = (prefixo) => {
-    const div = document.createElement('div');
-    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
-    div.innerHTML = `<input type="text" name="${prefixo}_mrc_musculo[]" placeholder="Músculo" style="flex:2;"><select name="${prefixo}_mrc_lado[]" style="flex:1;"><option value="D">D</option><option value="E">E</option></select><select name="${prefixo}_mrc_grau[]" style="flex:1;"><option value="5">5</option><option value="4">4</option></select><button type="button" onclick="this.parentElement.remove()" style="color:red;">X</button>`;
-    document.getElementById(`container-mrc-${prefixo}`).appendChild(div);
+// (Funções imprimirRegistro e verFicha e deletarItemProntuario mantidas do código anterior)
+window.imprimirRegistro = (jsonString) => {
+    const item = JSON.parse(decodeURIComponent(jsonString));
+    const selPaciente = document.getElementById("selPaciente");
+    const nomePaciente = selPaciente.options[selPaciente.selectedIndex].text;
+    const conf = JSON.parse(localStorage.getItem("fisio_config_clinica") || "{}");
+    
+    let corpoRelatorio = "";
+    if (item.tipo === 'Evolução') {
+        corpoRelatorio = `<p><strong>Descrição:</strong><br>${item.description.replace(/\n/g, '<br>')}</p>`;
+        if(item.content && (item.content.pre || item.content.pos)) {
+             corpoRelatorio += `<hr><p><i>(Nota: Dados detalhados de Pré/Pós sessão estão salvos no sistema digital)</i></p>`;
+        }
+    } else {
+        corpoRelatorio += "<ul>";
+        for (const [key, val] of Object.entries(item.content)) {
+            if(val) corpoRelatorio += `<li><strong>${key}:</strong> ${val}</li>`;
+        }
+        corpoRelatorio += "</ul>";
+    }
+
+    const elemento = document.createElement('div');
+    elemento.innerHTML = `
+        <div style="padding: 20px; font-family: Arial;">
+            <div style="text-align: center; border-bottom: 1px solid #333; margin-bottom: 20px;">
+                <h1>${conf.nome || "FisioManager"}</h1>
+                <small>${conf.endereco || ""}</small>
+            </div>
+            <h3>${item.tipo || item.specialty}</h3>
+            <p><strong>Paciente:</strong> ${nomePaciente} | <strong>Data:</strong> ${new Date(item.date || item.dataReal).toLocaleString('pt-BR')}</p>
+            <hr>
+            ${corpoRelatorio}
+        </div>
+    `;
+    html2pdf().from(elemento).save(`Relatorio.pdf`);
 };
-window.addLinhaADM = (prefixo) => {
-    const div = document.createElement('div');
-    div.style.cssText = "display:flex; gap:5px; margin-bottom:5px;";
-    div.innerHTML = `<input type="text" name="${prefixo}_adm_art[]" placeholder="Articulação" style="flex:2;"><select name="${prefixo}_adm_lado[]" style="flex:1;"><option value="D">D</option><option value="E">E</option></select><input type="text" name="${prefixo}_adm_grau[]" placeholder="Grau" style="flex:1;"><button type="button" onclick="this.parentElement.remove()" style="color:red;">X</button>`;
-    document.getElementById(`container-adm-${prefixo}`).appendChild(div);
+
+window.verFicha = (jsonString) => {
+    const item = JSON.parse(decodeURIComponent(jsonString));
+    const container = document.getElementById("conteudoFormulario");
+    document.getElementById("areaCriacao").style.display = "block";
+    document.getElementById("tituloCriacao").innerText = `Visualizando: ${item.specialty}`;
+    
+    container.innerHTML = templates[item.specialty] || "Erro template";
+    
+    setTimeout(() => {
+        for (const [key, value] of Object.entries(item.content)) {
+            const el = document.getElementsByName(key)[0];
+            // Preenche input normal
+            if (el && el.type !== 'checkbox' && el.type !== 'radio') el.value = value;
+            
+            // Preenche checkboxes
+            if (Array.isArray(value)) {
+                value.forEach(val => {
+                    const check = document.querySelector(`input[name="${key}"][value="${val}"]`);
+                    if(check) check.checked = true;
+                });
+            }
+        }
+        // Se tiver abas, volta pra primeira
+        if(window.mudarAba) window.mudarAba(1);
+    }, 100);
+    document.getElementById("areaCriacao").scrollIntoView({ behavior: 'smooth' });
 };
-// (Mantenha imprimirRegistro, verFicha e deletarItemProntuario iguais ao anterior)
-window.imprimirRegistro = (jsonString) => { /* ... código do PDF ... */ };
-window.verFicha = (jsonString) => { /* ... código ver ficha ... */ };
-window.deletarItemProntuario = async (endpoint, id) => { /* ... código deletar ... */ };
+
+window.deletarItemProntuario = async (endpoint, id) => {
+    if(!confirm("Apagar este registro?")) return;
+    try {
+        await authFetch(`/${endpoint}/${id}`, { method: "DELETE" });
+        showToast("Apagado.", "info");
+        carregarTimeline();
+    } catch(e) {
+        showToast("Erro ao apagar.", "error");
+    }
+};
