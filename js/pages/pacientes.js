@@ -1,6 +1,7 @@
 import { renderLayout } from "../core/layout.js";
 import { authFetch } from "../core/auth.js";
 import { showToast } from "../core/ui.js";
+import { ativarVoz } from "../core/voice.js"; // <--- Importe o módulo de voz
 
 let pacienteEmEdicaoId = null;
 
@@ -19,7 +20,9 @@ export async function renderPacientes() {
           <div class="row">
             <div class="col">
               <label>Nome Completo *</label>
-              <input type="text" id="nome" required placeholder="Obrigatório" style="width: 100%;">
+              <div style="display:flex; align-items:center;">
+                  <input type="text" id="nome" required placeholder="Ex: João da Silva" style="width: 100%;">
+              </div>
             </div>
             <div class="col">
               <label>Data de Nascimento</label>
@@ -37,23 +40,29 @@ export async function renderPacientes() {
               </select>
             </div>
             <div class="col">
-              <label>Telefone (com DDD)</label>
+              <label>Telefone</label>
               <input type="text" id="telefone" placeholder="Ex: 11999998888" style="width: 100%;">
             </div>
             <div class="col">
               <label>Convênio</label>
-              <input type="text" id="convenio" placeholder="Ex: Particular" style="width: 100%;">
+              <div style="display:flex; align-items:center;">
+                  <input type="text" id="convenio" placeholder="Ex: Particular" style="width: 100%;">
+              </div>
             </div>
           </div>
           
-          <div class="row">
+           <div class="row">
             <div class="col">
               <label>Diag. Médico</label>
-              <input type="text" id="diagMed" style="width: 100%;">
+              <div style="display:flex; align-items:center;">
+                 <input type="text" id="diagMed" style="width: 100%;">
+              </div>
             </div>
             <div class="col">
               <label>Diag. Funcional</label>
-              <input type="text" id="diagFunc" style="width: 100%;">
+              <div style="display:flex; align-items:center;">
+                  <input type="text" id="diagFunc" style="width: 100%;">
+              </div>
             </div>
           </div>
 
@@ -89,6 +98,12 @@ export async function renderPacientes() {
   document.getElementById("form-paciente").addEventListener("submit", salvarPaciente);
   document.getElementById("btnCancelarEdicao").addEventListener("click", resetarFormulario);
   
+  // --- ATIVA O COMANDO DE VOZ ---
+  ativarVoz("nome");
+  ativarVoz("convenio");
+  ativarVoz("diagMed");
+  ativarVoz("diagFunc");
+
   await carregarLista();
 }
 
@@ -104,14 +119,11 @@ async function carregarLista() {
     }
 
     tbody.innerHTML = lista.map(p => {
-        // Lógica do WhatsApp
         let btnWhats = "";
         if (p.phone && p.phone.length >= 10) {
-            // Remove caracteres não numéricos
             const numLimpo = p.phone.replace(/\D/g, '');
-            const mensagem = encodeURIComponent(`Olá ${p.name}, aqui é da Fisioterapia. Podemos confirmar seu horário?`);
+            const mensagem = encodeURIComponent(`Olá ${p.name}, aqui é da Fisioterapia. Tudo bem?`);
             const link = `https://wa.me/55${numLimpo}?text=${mensagem}`;
-            
             btnWhats = `<a href="${link}" target="_blank" style="text-decoration:none; margin-right:5px; font-size:1.2rem;" title="Chamar no Zap">📱</a>`;
         }
 
@@ -119,9 +131,7 @@ async function carregarLista() {
           <tr>
             <td><strong>${p.name}</strong></td>
             <td>${p.idade > 0 ? p.idade + ' anos' : '-'}</td>
-            <td>
-                ${btnWhats} ${p.phone || '-'}
-            </td>
+            <td>${btnWhats} ${p.phone || '-'}</td>
             <td style="text-align: center;">
                <button onclick="window.prepararEdicao(${p.id})" style="background: #ffc107; color: #333; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
                <button onclick="window.deletarPaciente(${p.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>

@@ -1,10 +1,11 @@
 import { renderLayout } from "../core/layout.js";
 import { authFetch } from "../core/auth.js";
 import { showToast } from "../core/ui.js";
+import { ativarVoz } from "../core/voice.js"; // <--- Importe novo
 
 let calendar = null;
 let eventSelectedId = null;
-let pacientesCache = []; // Cache para buscar telefone rápido
+let pacientesCache = [];
 
 export async function renderAgenda() {
   const html = `
@@ -24,7 +25,7 @@ export async function renderAgenda() {
         <label>Paciente:</label>
         <select id="agPaciente" style="width: 100%; margin-bottom: 15px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;"></select>
         
-        <a id="btnZapAgenda" target="_blank" style="display:none; background:#25D366; color:white; text-decoration:none; padding:8px; border-radius:5px; text-align:center; margin-bottom:15px; font-weight:bold;">
+        <a id="btnZapAgenda" target="_blank" style="display:none; background:#25D366; color:white; text-decoration:none; padding:8px; border-radius:5px; text-align:center; margin-bottom:15px; font-weight:bold; display:block;">
             📱 Confirmar no WhatsApp
         </a>
 
@@ -40,11 +41,16 @@ export async function renderAgenda() {
         </div>
 
         <label>Status:</label>
-        <select id="agStatus" style="width: 100%; margin-bottom: 25px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+        <select id="agStatus" style="width: 100%; margin-bottom: 15px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
           <option value="Agendado">Agendado</option>
           <option value="Realizado">Realizado</option>
           <option value="Cancelado">Cancelado</option>
         </select>
+        
+        <label>Observações:</label>
+        <div style="display:flex; align-items:center; margin-bottom:20px;">
+            <textarea id="agNotas" rows="2" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd;" placeholder="Recados, lembretes..."></textarea>
+        </div>
 
         <div style="display: flex; justify-content: space-between;">
           <button id="btnDeleteEvent" style="background: #fff; color: #dc3545; border: 1px solid #dc3545; padding: 8px 15px; border-radius: 6px; cursor: pointer; display: none;">Excluir</button>
@@ -67,6 +73,9 @@ export async function renderAgenda() {
   document.getElementById("btnCloseModal").onclick = fecharModal;
   document.getElementById("btnSaveEvent").onclick = salvarEvento;
   document.getElementById("btnDeleteEvent").onclick = deletarEvento;
+  
+  // Ativa Voz
+  ativarVoz("agNotas");
 }
 
 function initFullCalendar() {
@@ -98,7 +107,11 @@ function initFullCalendar() {
           end: ev.end_time,
           backgroundColor: ev.status === 'Realizado' ? '#28a745' : (ev.status === 'Cancelado' ? '#dc3545' : '#007bff'),
           borderColor: 'transparent',
-          extendedProps: { status: ev.status, patient_id: ev.patient_id }
+          extendedProps: { 
+              status: ev.status, 
+              patient_id: ev.patient_id,
+              notes: ev.notes // <--- Trazemos as notas do banco
+          }
         }));
         success(eventos);
       } catch (e) { failure(e); }
@@ -132,7 +145,7 @@ async function carregarPacientesNoSelect() {
   const select = document.getElementById("agPaciente");
   try {
     const pacientes = await authFetch("/patients/");
-    pacientesCache = pacientes; // Salva no cache para usar no Zap
+    pacientesCache = pacientes;
     if (pacientes.length === 0) {
         select.innerHTML = '<option value="">Nenhum paciente</option>';
     } else {
@@ -159,7 +172,6 @@ function abrirModal(event = null, start = null, end = null) {
     if (event.extendedProps.patient_id) {
         document.getElementById("agPaciente").value = event.extendedProps.patient_id;
         
-        // Lógica do Zap na Agenda
         const paciente = pacientesCache.find(p => p.id === event.extendedProps.patient_id);
         if (paciente && paciente.phone) {
             const num = paciente.phone.replace(/\D/g, '');
@@ -176,10 +188,13 @@ function abrirModal(event = null, start = null, end = null) {
     const isoEnd = event.end ? new Date(event.end.getTime() - (event.end.getTimezoneOffset() * 60000)).toISOString().slice(0, 16) : isoStart;
     document.getElementById("agInicio").value = isoStart;
     document.getElementById("agFim").value = isoEnd;
-
-    if (event.extendedProps && event.extendedProps.status) {
+    
+    // Preenche as notas e status
+    document.getElementById("agNotas").value = event.extendedProps.notes || "";
+    if (event.extendedProps.status) {
          document.getElementById("agStatus").value = event.extendedProps.status;
     }
+    
     btnDelete.style.display = "block";
 
   } else {
@@ -188,7 +203,8 @@ function abrirModal(event = null, start = null, end = null) {
     btnSave.innerText = "Salvar";
     btnSave.style.backgroundColor = "#28a745";
     btnDelete.style.display = "none";
-    btnZap.style.display = "none"; // Esconde zap em novo evento
+    btnZap.style.display = "none";
+    document.getElementById("agNotas").value = ""; // Limpa notas
     
     if (start && end) {
       const isoStart = new Date(start.getTime() - (start.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
@@ -211,6 +227,7 @@ async function salvarEvento() {
   const inicio = document.getElementById("agInicio").value;
   const fim = document.getElementById("agFim").value;
   const status = document.getElementById("agStatus").value;
+  const notas = document.getElementById("agNotas").value;
 
   if (!pacienteId || !inicio || !fim) {
     showToast("Preencha todos os campos!", "error");
@@ -221,7 +238,8 @@ async function salvarEvento() {
     patient_id: pacienteId,
     start_time: inicio,
     end_time: fim,
-    status: status
+    status: status,
+    notes: notas // Envia as observações
   };
 
   try {
