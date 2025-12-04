@@ -2,7 +2,7 @@ import { renderLayout } from "../core/layout.js";
 import { authFetch } from "../core/auth.js";
 import { showToast } from "../core/ui.js";
 
-let pacienteEmEdicaoId = null; // Variável para controlar se estamos criando ou editando
+let pacienteEmEdicaoId = null;
 
 export async function renderPacientes() {
   const html = `
@@ -37,12 +37,23 @@ export async function renderPacientes() {
               </select>
             </div>
             <div class="col">
-              <label>Telefone</label>
-              <input type="text" id="telefone" placeholder="(00) 90000-0000" style="width: 100%;">
+              <label>Telefone (com DDD)</label>
+              <input type="text" id="telefone" placeholder="Ex: 11999998888" style="width: 100%;">
             </div>
             <div class="col">
               <label>Convênio</label>
               <input type="text" id="convenio" placeholder="Ex: Particular" style="width: 100%;">
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col">
+              <label>Diag. Médico</label>
+              <input type="text" id="diagMed" style="width: 100%;">
+            </div>
+            <div class="col">
+              <label>Diag. Funcional</label>
+              <input type="text" id="diagFunc" style="width: 100%;">
             </div>
           </div>
 
@@ -60,13 +71,12 @@ export async function renderPacientes() {
                 <tr>
                 <th>Nome</th>
                 <th>Idade</th>
-                <th>Convênio</th>
                 <th>Telefone</th>
                 <th style="text-align: center;">Ações</th>
                 </tr>
             </thead>
             <tbody id="listaPac">
-                <tr><td colspan="5" style="text-align:center; padding: 15px;">Carregando...</td></tr>
+                <tr><td colspan="4" style="text-align:center; padding: 15px;">Carregando...</td></tr>
             </tbody>
             </table>
         </div>
@@ -89,24 +99,37 @@ async function carregarLista() {
     tbody.innerHTML = "";
 
     if (lista.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px;">Nenhum paciente.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;">Nenhum paciente.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = lista.map(p => `
-      <tr>
-        <td><strong>${p.name}</strong></td>
-        <td>${p.idade > 0 ? p.idade + ' anos' : '-'}</td>
-        <td>${p.insurance || '-'}</td>
-        <td>${p.phone || '-'}</td>
-        <td style="text-align: center;">
-           <button onclick="window.prepararEdicao(${p.id})" style="background: #ffc107; color: #333; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
-           <button onclick="window.deletarPaciente(${p.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
-        </td>
-      </tr>
-    `).join("");
+    tbody.innerHTML = lista.map(p => {
+        // Lógica do WhatsApp
+        let btnWhats = "";
+        if (p.phone && p.phone.length >= 10) {
+            // Remove caracteres não numéricos
+            const numLimpo = p.phone.replace(/\D/g, '');
+            const mensagem = encodeURIComponent(`Olá ${p.name}, aqui é da Fisioterapia. Podemos confirmar seu horário?`);
+            const link = `https://wa.me/55${numLimpo}?text=${mensagem}`;
+            
+            btnWhats = `<a href="${link}" target="_blank" style="text-decoration:none; margin-right:5px; font-size:1.2rem;" title="Chamar no Zap">📱</a>`;
+        }
+
+        return `
+          <tr>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.idade > 0 ? p.idade + ' anos' : '-'}</td>
+            <td>
+                ${btnWhats} ${p.phone || '-'}
+            </td>
+            <td style="text-align: center;">
+               <button onclick="window.prepararEdicao(${p.id})" style="background: #ffc107; color: #333; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+               <button onclick="window.deletarPaciente(${p.id})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
+            </td>
+          </tr>
+        `;
+    }).join("");
   } catch (error) {
-    console.error(error);
     showToast("Erro ao carregar lista.", "error");
   }
 }
@@ -116,84 +139,72 @@ async function salvarPaciente(e) {
   
   const payload = {
     name: document.getElementById("nome").value,
-    birth_date: document.getElementById("data_nascimento").value || null, // Envia null se vazio
+    birth_date: document.getElementById("data_nascimento").value || null,
     sex: document.getElementById("sexo").value || null,
     phone: document.getElementById("telefone").value || null,
-    insurance: document.getElementById("convenio").value || null
+    insurance: document.getElementById("convenio").value || null,
+    medical_diagnosis: document.getElementById("diagMed").value || null,
+    functional_diagnosis: document.getElementById("diagFunc").value || null
   };
 
   try {
     if (pacienteEmEdicaoId) {
-        // --- MODO EDIÇÃO (PATCH) ---
         await authFetch(`/patients/${pacienteEmEdicaoId}`, {
             method: "PATCH",
             body: JSON.stringify(payload)
         });
-        showToast("Paciente atualizado!", "success");
+        showToast("Atualizado!", "success");
     } else {
-        // --- MODO CRIAÇÃO (POST) ---
         await authFetch("/patients/", {
             method: "POST",
             body: JSON.stringify(payload)
         });
-        showToast("Paciente cadastrado!", "success");
+        showToast("Cadastrado!", "success");
     }
-
     resetarFormulario();
     carregarLista();
-
   } catch (error) {
-    console.error(error);
     showToast("Erro ao salvar.", "error");
   }
 }
 
-// Preenche o formulário com os dados do paciente para editar
 window.prepararEdicao = async function(id) {
     try {
         const paciente = await authFetch(`/patients/${id}`);
-        
         document.getElementById("nome").value = paciente.name;
         document.getElementById("data_nascimento").value = paciente.birth_date || "";
         document.getElementById("sexo").value = paciente.sex || "";
         document.getElementById("telefone").value = paciente.phone || "";
         document.getElementById("convenio").value = paciente.insurance || "";
+        document.getElementById("diagMed").value = paciente.medical_diagnosis || "";
+        document.getElementById("diagFunc").value = paciente.functional_diagnosis || "";
 
-        // Muda estado visual para Edição
         pacienteEmEdicaoId = id;
         document.getElementById("tituloForm").innerText = "Editando: " + paciente.name;
         document.getElementById("btnSalvar").innerText = "Atualizar Paciente";
-        document.getElementById("btnSalvar").style.backgroundColor = "#007bff"; // Azul
+        document.getElementById("btnSalvar").style.backgroundColor = "#007bff";
         document.getElementById("btnCancelarEdicao").style.display = "block";
-        
-        // Rola a tela para cima (para ver o formulário)
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    } catch (e) {
-        showToast("Erro ao carregar dados.", "error");
-    }
+    } catch (e) { showToast("Erro ao carregar dados.", "error"); }
 };
 
 function resetarFormulario(e) {
     if(e) e.preventDefault();
     document.getElementById("form-paciente").reset();
-    
-    // Volta para o estado de "Novo"
     pacienteEmEdicaoId = null;
     document.getElementById("tituloForm").innerText = "Novo Paciente";
     document.getElementById("btnSalvar").innerText = "+ Salvar Paciente";
-    document.getElementById("btnSalvar").style.backgroundColor = "#28a745"; // Verde
+    document.getElementById("btnSalvar").style.backgroundColor = "#28a745";
     document.getElementById("btnCancelarEdicao").style.display = "none";
 }
 
 window.deletarPaciente = async function(id) {
-  if (confirm("Tem certeza que deseja excluir?")) {
+  if (confirm("Excluir paciente?")) {
     try {
       await authFetch(`/patients/${id}`, { method: "DELETE" });
-      showToast("Paciente removido!", "info");
+      showToast("Removido!", "info");
       carregarLista();
-    } catch (error) {
-      showToast("Erro ao deletar.", "error");
-    }
+    } catch (error) { showToast("Erro ao deletar.", "error"); }
   }
 };
