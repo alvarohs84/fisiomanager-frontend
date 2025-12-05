@@ -84,26 +84,144 @@ export const templates = {
         <textarea name="objetivos" class="u-full-width"></textarea>
     `,
 
-    "Respiratoria": `
-        <h4 style="color:#17a2b8; border-bottom:1px solid #eee; padding-bottom:5px;">Fisioterapia Respiratória</h4>
-        <div class="row">
-            <div class="col"><label>Sinais: PA / FC / FR / SpO2:</label><input name="sinais_vitais" class="u-full-width"></div>
-            <div class="col"><label>Uso de O2?</label><input name="uso_o2" class="u-full-width"></div>
+"Respiratoria": `
+        <h4 style="color:#17a2b8; border-bottom:2px solid #17a2b8; padding-bottom:5px; margin-bottom:15px;">Ficha de Avaliação Respiratória</h4>
+        
+        <div style="background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:15px;">
+            <label style="font-weight:bold; color:#333;">1. Identificação Clínica</label>
+            <div class="row">
+                <div class="col"><label>Data:</label><input type="date" name="data_av" class="u-full-width"></div>
+                <div class="col"><label>Leito / Setor:</label><input name="leito" class="u-full-width"></div>
+            </div>
+            <label>Diagnóstico Clínico:</label><input name="diag_clinico" class="u-full-width">
+            <div class="row">
+                <div class="col"><label>Encaminhado por:</label><input name="encaminhado" class="u-full-width"></div>
+                <div class="col"><label>Início sintomas:</label><input type="date" name="data_sintomas" class="u-full-width"></div>
+            </div>
         </div>
 
-        <label>Ausculta Pulmonar:</label>
-        <textarea name="ausculta" class="u-full-width" placeholder="Ex: MV+, Roncos em base..."></textarea>
+        <label style="font-weight:bold; color:#0056b3;">2. Queixa Principal</label>
+        <div style="display: flex; gap: 15px; flex-wrap:wrap; margin-bottom:10px;">
+            <label><input type="checkbox" name="qp_dispneia" value="Sim"> Dispneia</label>
+            <label><input type="checkbox" name="qp_tosse" value="Sim"> Tosse</label>
+            <label><input type="checkbox" name="qp_dor" value="Sim"> Dor torácica</label>
+            <label><input type="checkbox" name="qp_cansaco" value="Sim"> Cansaço</label>
+            <label><input type="checkbox" name="qp_expect" value="Sim"> Expectoração</label>
+        </div>
+        <input name="qp_outro" class="u-full-width" placeholder="Outro...">
 
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">3. História da Doença Atual (HDA)</label>
+        <textarea name="hda" class="u-full-width" rows="3" placeholder="Evolução, tratamentos prévios, oxigenoterapia..."></textarea>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">4. Antecedentes e Hábitos</label>
+        <div style="display: flex; gap: 10px; flex-wrap:wrap;">
+            <label><input type="checkbox" name="ant_dpoc" value="Sim"> DPOC</label>
+            <label><input type="checkbox" name="ant_asma" value="Sim"> Asma</label>
+            <label><input type="checkbox" name="ant_ic" value="Sim"> Insuf. Cardíaca</label>
+            <label><input type="checkbox" name="ant_pneumonia" value="Sim"> Pneumonia prévia</label>
+        </div>
         <div class="row">
-            <div class="col"><label>Padrão Respiratório:</label><input name="padrao" class="u-full-width"></div>
-            <div class="col"><label>Expansibilidade:</label><input name="expansibilidade" class="u-full-width"></div>
+            <div class="col"><label>Cirurgias:</label><input name="cirurgias" class="u-full-width"></div>
+            <div class="col"><label>Alergias:</label><input name="alergias" class="u-full-width"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>Tabagismo:</label><select name="tabagismo" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option><option value="Ex">Ex-tabagista</option></select></div>
+            <div class="col"><label>Carga (maços/ano):</label><input name="carga_tabagica" class="u-full-width"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>Etilismo:</label><select name="etilismo" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+            <div class="col"><label>Ativ. Física:</label><select name="ativ_fisica" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
         </div>
 
-        <label>Tosse e Secreção (Aspecto/Quantidade):</label>
-        <input name="secrecao" class="u-full-width">
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">5. Sinais Vitais</label>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+            <div><label>FC (bpm)</label><input type="number" name="fc" class="u-full-width"></div>
+            <div><label>FR (rpm)</label><input type="number" name="fr" class="u-full-width"></div>
+            <div><label>PA (mmHg)</label><input name="pa" class="u-full-width"></div>
+            <div><label>SpO2 (%)</label><input type="number" name="spo2" class="u-full-width"></div>
+            <div><label>Temp (°C)</label><input name="temp" class="u-full-width"></div>
+            <div><label>PFE (L/min)</label><input name="pfe" class="u-full-width"></div>
+        </div>
 
-        <label>Conduta (Higiene brônquica, Reexpansão):</label>
-        <textarea name="conduta" class="u-full-width"></textarea>
+        <h5 style="color:#17a2b8; margin-top:20px; border-bottom:1px solid #eee;">6. Avaliação Física</h5>
+        
+        <label style="font-weight:bold;">6.1 Inspeção</label>
+        <div class="row">
+            <div class="col">
+                <label>Tipo:</label>
+                <select name="tipo_torax" class="u-full-width">
+                    <option value="Costoabdominal">Costoabdominal</option>
+                    <option value="Torácico">Torácico Sup.</option>
+                    <option value="Abdominal">Abdominal</option>
+                </select>
+            </div>
+            <div class="col">
+                <label>Padrão:</label>
+                <select name="padrao_resp" class="u-full-width">
+                    <option value="Eupneico">Eupneico</option>
+                    <option value="Taquipneico">Taquipneico</option>
+                    <option value="Bradipneico">Bradipneico</option>
+                    <option value="Irregular">Irregular</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 15px; flex-wrap:wrap;">
+            <label><input type="checkbox" name="musc_acessoria"> Musc. Acessória</label>
+            <label><input type="checkbox" name="cianose"> Cianose</label>
+            <label><input type="checkbox" name="tiragem"> Tiragem</label>
+            <label><input type="checkbox" name="exp_diminuida"> Expansib. Diminuída</label>
+        </div>
+        <label>Deformidades:</label><input name="deformidades" class="u-full-width">
+
+        <label style="font-weight:bold; margin-top:10px;">6.2 Palpação e Percussão</label>
+        <div class="row">
+            <div class="col"><label>Mobilidade:</label><select name="mobilidade" class="u-full-width"><option value="Simétrica">Simétrica</option><option value="Assimétrica">Assimétrica</option></select></div>
+            <div class="col"><label>FTV:</label><select name="ftv" class="u-full-width"><option value="Normal">Normal</option><option value="Aumentado">Aumentado</option><option value="Diminuído">Diminuído</option></select></div>
+            <div class="col"><label>Som:</label><select name="som_percussao" class="u-full-width"><option value="Claro Pulmonar">Claro Pulmonar</option><option value="Hipersonoridade">Hipersonoridade</option><option value="Macicez">Macicez</option></select></div>
+        </div>
+
+        <label style="font-weight:bold; margin-top:10px;">6.4 Ausculta Pulmonar</label>
+        <table width="100%" style="font-size:0.8rem; margin-bottom:10px;">
+            <tr style="background:#eee;"><th>Região</th><th>Som Respiratório</th><th>Ruídos</th></tr>
+            <tr><td>Apical</td><td><input name="ap_som" class="u-full-width"></td><td><input name="ap_ruido" class="u-full-width"></td></tr>
+            <tr><td>Média</td><td><input name="md_som" class="u-full-width"></td><td><input name="md_ruido" class="u-full-width"></td></tr>
+            <tr><td>Basal</td><td><input name="bs_som" class="u-full-width"></td><td><input name="bs_ruido" class="u-full-width"></td></tr>
+        </table>
+        <label>Ruídos Predominantes:</label>
+        <div style="display: flex; gap: 10px; flex-wrap:wrap;">
+            <label><input type="checkbox" name="ra_sibilos"> Sibilos</label>
+            <label><input type="checkbox" name="ra_estertores"> Estertores</label>
+            <label><input type="checkbox" name="ra_roncos"> Roncos</label>
+            <label><input type="checkbox" name="ra_ausencia"> Ausência</label>
+        </div>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">7. Tosse e Secreção</label>
+        <div class="row">
+            <div class="col"><label>Tosse:</label><select name="tosse_tipo" class="u-full-width"><option value="Eficaz">Eficaz</option><option value="Ineficaz">Ineficaz</option><option value="Seca">Seca</option><option value="Produtiva">Produtiva</option></select></div>
+            <div class="col"><label>Volume:</label><select name="sec_volume" class="u-full-width"><option value="Escasso">Escasso</option><option value="Moderado">Moderado</option><option value="Abundante">Abundante</option></select></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>Cor:</label><input name="sec_cor" class="u-full-width"></div>
+            <div class="col"><label>Viscosidade:</label><select name="sec_visc" class="u-full-width"><option value="Fluida">Fluida</option><option value="Espessa">Espessa</option></select></div>
+        </div>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">8. Exames Complementares</label>
+        <label>RX / TC:</label><input name="exame_imagem" class="u-full-width">
+        <label>Gasometria (pH / PaO2 / PaCO2 / HCO3 / SaO2):</label>
+        <input name="gasometria" class="u-full-width" placeholder="Ex: 7.35 / 80 / 40 / 24 / 98%">
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">9. Diagnóstico Fisioterapêutico</label>
+        <textarea name="diagnostico_fisio" class="u-full-width" rows="3"></textarea>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">10. Conduta</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+            <label><input type="checkbox" name="cdt_higiene"> Higiene Brônquica</label>
+            <label><input type="checkbox" name="cdt_ex_vent"> Exerc. Ventilatórios</label>
+            <label><input type="checkbox" name="cdt_tmi"> Treino Musc. Resp.</label>
+            <label><input type="checkbox" name="cdt_vni"> VNI</label>
+            <label><input type="checkbox" name="cdt_motor"> Mobilização/Motor</label>
+        </div>
+        <label>Obs:</label><input name="conduta_obs" class="u-full-width">
     `,
 
     "Cardiovascular": `
