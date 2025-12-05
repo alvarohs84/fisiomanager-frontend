@@ -14,14 +14,22 @@ export async function renderAvaliacoes() {
           <h3>Nova Avaliação</h3>
           
           <label>Paciente</label>
-          <select id="selPaciente" style="width: 100%; margin-bottom: 15px; padding: 10px;">
+          <select id="selPaciente" style="width: 100%; margin-bottom: 15px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
             <option value="">Carregando...</option>
           </select>
 
           <label>Modelo de Ficha</label>
-          <select id="selEspecialidade" style="width: 100%; margin-bottom: 20px; padding: 10px;">
-            <option value="Completa">Fisioterapia Completa</option>
-            <option value="Simplificada">Simplificada / Evolução</option>
+          <select id="selEspecialidade" style="width: 100%; margin-bottom: 20px; padding: 10px; border-radius: 6px; border: 1px solid #ddd;">
+            <option value="Ortopedica">Ortopédica / Traumatológica</option>
+            <option value="NeuroAdulto">Neurofuncional (Adulto)</option>
+            <option value="NeuroPediatrica">Neurofuncional (Pediátrica)</option>
+            <option value="Respiratoria">Respiratória / TC6</option>
+            <option value="Cardiovascular">Cardiovascular / Metabólica</option>
+            <option value="Uroginecologica">Uroginecológica</option>
+            <option value="Dermatofuncional">Dermatofuncional</option>
+            <option value="Esportiva">Esportiva</option>
+            <option value="Geriatrica">Geriátrica</option>
+            <option value="Ergonomia">Ergonomia</option>
           </select>
 
           <button id="btnCriarFicha" class="btn-primary" style="width: 100%;">Abrir Ficha</button>
@@ -65,30 +73,67 @@ export async function renderAvaliacoes() {
   document.getElementById("btnFecharFicha").onclick = () => document.getElementById('areaFormulario').style.display='none';
 }
 
-// --- FUNÇÕES AUXILIARES ---
+// --- FUNÇÕES GLOBAIS AUXILIARES ---
 
-// 1. Função Global para Abas
+// 1. Navegação de Abas
 window.mudarAba = (n) => {
-    // Esconde todos
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     
-    // Mostra o atual
-    document.getElementById(`tab-${n}`).style.display = 'block';
-    // Ativa botão (gambiarra segura para pegar o botão certo pelo texto ou ordem)
+    const content = document.getElementById(`tab-${n}`);
+    if (content) content.style.display = 'block';
+    
     const btns = document.querySelectorAll('.tab-btn');
     if(btns[n-1]) btns[n-1].classList.add('active');
 };
 
-// 2. Calculadora IMC
+// 2. Calculadora IMC (Para fichas que usam)
 window.calcIMC = () => {
-    const peso = parseFloat(document.getElementById('peso').value);
-    const altura = parseFloat(document.getElementById('altura').value);
-    if (peso > 0 && altura > 0) {
-        const imc = peso / (altura * altura);
-        document.getElementById('imc').value = imc.toFixed(2);
+    const p = parseFloat(document.getElementById('peso').value);
+    const a = parseFloat(document.getElementById('altura').value);
+    if (p > 0 && a > 0) {
+        const imc = p / (a * a);
+        const el = document.getElementById('imc');
+        if(el) el.value = imc.toFixed(2);
     }
 };
+
+// 3. CALCULADORA AUTOMÁTICA TC6 (NOVO!)
+window.calcularTC6 = () => {
+    const sexo = document.getElementById("tc6_sexo").value;
+    const idade = parseFloat(document.getElementById("tc6_idade").value);
+    const alturaCm = parseFloat(document.getElementById("tc6_altura").value);
+    const peso = parseFloat(document.getElementById("tc6_peso").value);
+    const distanciaPercorrida = parseFloat(document.getElementById("tc6_distancia").value);
+
+    const campoPrevisto = document.getElementById("tc6_previsto");
+    const campoPorcentagem = document.getElementById("tc6_porcentagem");
+
+    if (sexo && idade && alturaCm && peso) {
+        let distanciaPrevista = 0;
+
+        // Fórmulas de Enright & Sherrill (1998)
+        if (sexo === "M") {
+            distanciaPrevista = (7.57 * alturaCm) - (5.02 * idade) - (1.76 * peso) - 309;
+        } else {
+            distanciaPrevista = (2.11 * alturaCm) - (2.29 * peso) - (5.78 * idade) + 667;
+        }
+
+        distanciaPrevista = Math.round(distanciaPrevista);
+        
+        if(campoPrevisto) campoPrevisto.value = distanciaPrevista;
+
+        if (distanciaPercorrida && campoPorcentagem) {
+            const porcentagem = (distanciaPercorrida / distanciaPrevista) * 100;
+            campoPorcentagem.value = porcentagem.toFixed(1) + "%";
+        } else if(campoPorcentagem) {
+            campoPorcentagem.value = "";
+        }
+    }
+};
+
+
+// --- LÓGICA PRINCIPAL ---
 
 async function carregarPacientes() {
     try {
@@ -113,7 +158,13 @@ function abrirFicha() {
     }
 
     const templateHTML = templates[tipo];
-    document.getElementById("conteudoDinamico").innerHTML = templateHTML || "Erro no template";
+    
+    if (!templateHTML) {
+        showToast("Template não encontrado para: " + tipo, "error");
+        return;
+    }
+
+    document.getElementById("conteudoDinamico").innerHTML = templateHTML;
     document.getElementById("tituloFicha").innerText = "Ficha: " + tipo;
     document.getElementById("areaFormulario").style.display = "block";
     
@@ -134,7 +185,6 @@ async function salvarAvaliacao(e) {
     const conteudoJSON = {};
     
     formData.forEach((value, key) => {
-        // Se já existe (checkbox multiplo), transforma em array
         if(conteudoJSON[key]) {
             if(!Array.isArray(conteudoJSON[key])) {
                 conteudoJSON[key] = [conteudoJSON[key]];
@@ -203,16 +253,13 @@ window.verDetalhes = (jsonString) => {
     document.getElementById("tituloFicha").innerText = `Visualizando: ${av.specialty}`;
     document.getElementById("areaFormulario").style.display = "block";
 
-    // Preenche campos
     setTimeout(() => {
-        // Inputs normais
+        // Preenche campos
         for (const [key, value] of Object.entries(av.content)) {
             const el = document.getElementsByName(key)[0];
-            // Lida com checkboxes (array) ou valor único
             if (el) {
                 if (el.type !== 'checkbox' && el.type !== 'radio') el.value = value;
             }
-            // Lida com checkboxes marcados
             if (Array.isArray(value)) {
                 value.forEach(val => {
                     const check = document.querySelector(`input[name="${key}"][value="${val}"]`);
@@ -220,7 +267,6 @@ window.verDetalhes = (jsonString) => {
                 });
             }
         }
-        // Ativa Aba 1
         if(document.getElementById('tab-1')) window.mudarAba(1);
     }, 100);
     

@@ -227,122 +227,120 @@ export const templates = {
     "Cardiovascular": `
         <h4 style="color:#dc3545; border-bottom:2px solid #dc3545; padding-bottom:5px; margin-bottom:15px;">Reabilitação Cardiopulmonar e Metabólica</h4>
 
-        <!-- 1. IDENTIFICAÇÃO COMPLEMENTAR -->
         <div style="background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:15px;">
             <label style="font-weight:bold; color:#333;">1. Identificação Clínica</label>
             <div class="row">
-                <div class="col"><label>Data da Avaliação:</label><input type="date" name="data_av" class="u-full-width"></div>
-                <div class="col"><label>Leito / Setor:</label><input name="leito" class="u-full-width"></div>
+                <div class="col"><label>Data:</label><input type="date" name="data_av" class="u-full-width"></div>
+                <div class="col"><label>Diagnóstico:</label><input name="diag_clinico" class="u-full-width"></div>
             </div>
-            <label>Diagnóstico Clínico:</label><input name="diag_clinico" class="u-full-width">
-            <div class="row">
-                <div class="col"><label>Encaminhado por:</label><input name="encaminhado" class="u-full-width"></div>
-                <div class="col"><label>Data Internação / Início:</label><input type="date" name="data_inicio" class="u-full-width"></div>
-            </div>
+            <label>Histórico (Doenças prévias, Cirurgias, Comorbidades):</label>
+            <textarea name="historico" class="u-full-width" rows="2"></textarea>
+            <label>Medicações em uso:</label><input name="medicacoes" class="u-full-width">
         </div>
 
-        <!-- 2. HISTÓRICO CLÍNICO -->
-        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">2. Histórico Clínico</label>
-        <label>Doenças Cardiovasculares/Pulmonares prévias:</label>
-        <textarea name="doencas_previas" class="u-full-width" rows="2"></textarea>
-        
-        <label>Cirurgias Cardíacas/Torácicas:</label>
-        <input name="cirurgias" class="u-full-width">
-        
-        <div class="row">
-            <div class="col"><label>Comorbidades (HAS, DM...):</label><input name="comorbidades" class="u-full-width"></div>
-            <div class="col"><label>Histórico Familiar:</label><input name="hist_familiar" class="u-full-width"></div>
-        </div>
-        
-        <div class="row">
-            <div class="col"><label>Uso de Marcapasso/CDI?</label><select name="marcapasso" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
-            <div class="col"><label>Medicações em uso:</label><input name="medicacoes" class="u-full-width"></div>
-        </div>
-
-        <!-- 3. FATORES DE RISCO -->
-        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">3. Fatores de Risco Cardiometabólicos</label>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background:#fff3cd; padding:10px; border-radius:5px;">
-            <label><input type="checkbox" name="fr_has" value="Sim"> Hipertensão Arterial</label>
-            <label><input type="checkbox" name="fr_dm" value="Sim"> Diabetes Mellitus</label>
+        <label style="font-weight:bold; color:#dc3545;">2. Fatores de Risco</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background:#fff3cd; padding:10px; border-radius:5px; margin-bottom:15px;">
+            <label><input type="checkbox" name="fr_has" value="Sim"> Hipertensão</label>
+            <label><input type="checkbox" name="fr_dm" value="Sim"> Diabetes</label>
             <label><input type="checkbox" name="fr_tabagismo" value="Sim"> Tabagismo</label>
-            <label><input type="checkbox" name="fr_dislipidemia" value="Sim"> Dislipidemia</label>
             <label><input type="checkbox" name="fr_sedentarismo" value="Sim"> Sedentarismo</label>
             <label><input type="checkbox" name="fr_obesidade" value="Sim"> Obesidade</label>
-            <label><input type="checkbox" name="fr_stress" value="Sim"> Estresse</label>
-            <label><input type="checkbox" name="fr_alcool" value="Sim"> Álcool</label>
         </div>
 
-        <!-- 4. AVALIAÇÃO CLÍNICA INICIAL -->
-        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">4. Avaliação Clínica Inicial</label>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <div style="flex:1;"><label>FC Repouso:</label><input name="fc_repouso" class="u-full-width"></div>
-            <div style="flex:1;"><label>PA Repouso:</label><input name="pa_repouso" class="u-full-width"></div>
-            <div style="flex:1;"><label>SpO2:</label><input name="spo2_repouso" class="u-full-width"></div>
-        </div>
+        <label style="font-weight:bold; color:#dc3545;">3. Avaliação Basal</label>
         <div class="row">
-            <div class="col"><label>IMC:</label><input name="imc_cardio" class="u-full-width"></div>
-            <div class="col"><label>Classe Funcional (NYHA/GOLD):</label><input name="classe_funcional" class="u-full-width"></div>
+            <div class="col"><label>FC Repouso:</label><input name="fc_rep" class="u-full-width"></div>
+            <div class="col"><label>PA Repouso:</label><input name="pa_rep" class="u-full-width"></div>
+            <div class="col"><label>SpO2:</label><input name="spo2_rep" class="u-full-width"></div>
         </div>
-        <label>Limitações físicas relatadas:</label>
-        <textarea name="limitacoes" class="u-full-width"></textarea>
 
-        <!-- 5. TABELA DE TESTES -->
-        <h5 style="color:#dc3545; margin-top:20px; border-bottom:1px solid #eee;">5. Testes e Medidas</h5>
-        <table width="100%" style="font-size:0.85rem;">
-            <tr style="background:#eee;">
-                <th style="padding:5px;">Parâmetro</th>
-                <th style="padding:5px;">Resultado</th>
-                <th style="padding:5px;">Obs</th>
-            </tr>
-            <tr>
-                <td>TC6 (m)</td>
-                <td><input name="tc6_result" class="u-full-width"></td>
-                <td><input name="tc6_obs" class="u-full-width"></td>
-            </tr>
-            <tr>
-                <td>Borg (Esforço)</td>
-                <td><input name="borg_result" class="u-full-width"></td>
-                <td><input name="borg_obs" class="u-full-width"></td>
-            </tr>
-            <tr>
-                <td>METs (Capacidade)</td>
-                <td><input name="mets_result" class="u-full-width"></td>
-                <td><input name="mets_obs" class="u-full-width"></td>
-            </tr>
-            <tr>
-                <td>FC Máxima</td>
-                <td><input name="fcmax_result" class="u-full-width"></td>
-                <td><input name="fcmax_obs" class="u-full-width"></td>
-            </tr>
-            <tr>
-                <td>PA Pico Esforço</td>
-                <td><input name="pa_pico_result" class="u-full-width"></td>
-                <td><input name="pa_pico_obs" class="u-full-width"></td>
-            </tr>
-            <tr>
-                <td>Sat O2 Mínima</td>
-                <td><input name="sat_min_result" class="u-full-width"></td>
-                <td><input name="sat_min_obs" class="u-full-width"></td>
-            </tr>
-            <tr>
-                <td>Espirometria</td>
-                <td><input name="espiro_result" class="u-full-width"></td>
-                <td><input name="espiro_obs" class="u-full-width"></td>
-            </tr>
-        </table>
+        <div style="border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin-top: 20px; background-color: #f0f8ff;">
+            <h5 style="color: #0056b3; font-weight: bold; margin-bottom: 10px;">🚶 Teste de Caminhada de 6 Minutos (TC6)</h5>
+            
+            <label style="font-size: 0.85rem; font-weight: bold; color: #555;">Dados para Cálculo (Enright & Sherrill):</label>
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col">
+                    <label>Sexo</label>
+                    <select id="tc6_sexo" name="tc6_sexo" class="u-full-width" onchange="window.calcularTC6()">
+                        <option value="">Selecione...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Idade (anos)</label>
+                    <input type="number" id="tc6_idade" name="tc6_idade" class="u-full-width" oninput="window.calcularTC6()">
+                </div>
+                <div class="col">
+                    <label>Altura (cm)</label>
+                    <input type="number" id="tc6_altura" name="tc6_altura" class="u-full-width" placeholder="Ex: 175" oninput="window.calcularTC6()">
+                </div>
+                <div class="col">
+                    <label>Peso (kg)</label>
+                    <input type="number" id="tc6_peso" name="tc6_peso" class="u-full-width" oninput="window.calcularTC6()">
+                </div>
+            </div>
 
-        <!-- 6. OBJETIVOS E CONDUTA -->
-        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">6. Objetivos da Reabilitação</label>
-        <textarea name="objetivos" class="u-full-width" rows="3"></textarea>
+            <table width="100%" style="background: white; margin-bottom: 10px; font-size: 0.85rem;">
+                <thead>
+                    <tr style="background: #e9ecef;">
+                        <th>Parâmetro</th>
+                        <th>Inicial (Repouso)</th>
+                        <th>Final (6º min)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>FC (bpm)</strong></td>
+                        <td><input name="tc6_fc_ini" class="u-full-width"></td>
+                        <td><input name="tc6_fc_fim" class="u-full-width"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>PA (mmHg)</strong></td>
+                        <td><input name="tc6_pa_ini" class="u-full-width"></td>
+                        <td><input name="tc6_pa_fim" class="u-full-width"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>SpO2 (%)</strong></td>
+                        <td><input name="tc6_spo2_ini" class="u-full-width"></td>
+                        <td><input name="tc6_spo2_fim" class="u-full-width"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Borg Dispneia (0-10)</strong></td>
+                        <td><input name="tc6_borg_d_ini" class="u-full-width"></td>
+                        <td><input name="tc6_borg_d_fim" class="u-full-width"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Borg MMII (0-10)</strong></td>
+                        <td><input name="tc6_borg_m_ini" class="u-full-width"></td>
+                        <td><input name="tc6_borg_m_fim" class="u-full-width"></td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <label style="font-weight:bold; color:#0056b3;">7. Plano de Tratamento / Conduta</label>
-        <div style="display: flex; gap: 10px; flex-wrap:wrap; margin-bottom:10px;">
-            <label><input type="checkbox" name="cond_aerobico" value="Sim"> Treino Aeróbico</label>
-            <label><input type="checkbox" name="cond_fortalecimento" value="Sim"> Fortalecimento</label>
-            <label><input type="checkbox" name="cond_respiratorio" value="Sim"> Treino Resp.</label>
-            <label><input type="checkbox" name="cond_educacao" value="Sim"> Educação em Saúde</label>
+            <div style="background: #e7f1ff; padding: 15px; border-radius: 5px; border: 1px solid #b6d4fe;">
+                <div class="row">
+                    <div class="col">
+                        <label style="font-weight:bold; color: #0056b3;">Distância Percorrida (m)</label>
+                        <input type="number" id="tc6_distancia" name="tc6_distancia" class="u-full-width" style="border: 2px solid #0056b3;" oninput="window.calcularTC6()">
+                    </div>
+                    <div class="col">
+                        <label style="font-weight:bold; color: #555;">Distância Prevista (m)</label>
+                        <input type="text" id="tc6_previsto" name="tc6_previsto" class="u-full-width" readonly style="background: #eee; font-weight: bold;">
+                    </div>
+                    <div class="col">
+                        <label style="font-weight:bold; color: #28a745;">% do Previsto</label>
+                        <input type="text" id="tc6_porcentagem" name="tc6_porcentagem" class="u-full-width" readonly style="background: #d4edda; color: #155724; font-weight: bold;">
+                    </div>
+                </div>
+            </div>
+
+            <label style="margin-top: 10px;">Sintomas / Observações do Teste:</label>
+            <textarea name="tc6_obs" class="u-full-width" rows="2"></textarea>
         </div>
-        <textarea name="conduta_obs" class="u-full-width" placeholder="Detalhes da prescrição..."></textarea>
+
+        <label style="font-weight:bold; color:#dc3545; margin-top:15px;">5. Plano de Tratamento</label>
+        <textarea name="conduta" class="u-full-width" rows="3"></textarea>
     `,
 
     "Uroginecologica": `
