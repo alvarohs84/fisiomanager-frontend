@@ -219,7 +219,7 @@ export const templates = {
             <label><input type="checkbox" name="cdt_ex_vent"> Exerc. Ventilatórios</label>
             <label><input type="checkbox" name="cdt_tmi"> Treino Musc. Resp.</label>
             <label><input type="checkbox" name="cdt_vni"> VNI</label>
-            <label><input type="checkbox" name="cdt_motor"> Mobilização/Motor</label>
+            <label><input type="checkbox" name="cdt_rp"> Reabilitação Pulmonar</label>
         </div>
         <label>Obs:</label><input name="conduta_obs" class="u-full-width">
     `,
