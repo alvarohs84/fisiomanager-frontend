@@ -225,23 +225,124 @@ export const templates = {
     `,
 
     "Cardiovascular": `
-        <h4 style="color:#dc3545; border-bottom:1px solid #eee; padding-bottom:5px;">Reabilitação Cardiovascular</h4>
-        <label>Diagnóstico / Evento Cardíaco:</label>
-        <input name="diag_cardio" class="u-full-width">
+        <h4 style="color:#dc3545; border-bottom:2px solid #dc3545; padding-bottom:5px; margin-bottom:15px;">Reabilitação Cardiopulmonar e Metabólica</h4>
 
-        <label>Fatores de Risco:</label>
-        <textarea name="fatores_risco" class="u-full-width" placeholder="HAS, DM, Tabagismo, Sedentarismo..."></textarea>
-
-        <div class="row">
-            <div class="col"><label>PA Repouso:</label><input name="pa" class="u-full-width"></div>
-            <div class="col"><label>FC Repouso:</label><input name="fc" class="u-full-width"></div>
+        <!-- 1. IDENTIFICAÇÃO COMPLEMENTAR -->
+        <div style="background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:15px;">
+            <label style="font-weight:bold; color:#333;">1. Identificação Clínica</label>
+            <div class="row">
+                <div class="col"><label>Data da Avaliação:</label><input type="date" name="data_av" class="u-full-width"></div>
+                <div class="col"><label>Leito / Setor:</label><input name="leito" class="u-full-width"></div>
+            </div>
+            <label>Diagnóstico Clínico:</label><input name="diag_clinico" class="u-full-width">
+            <div class="row">
+                <div class="col"><label>Encaminhado por:</label><input name="encaminhado" class="u-full-width"></div>
+                <div class="col"><label>Data Internação / Início:</label><input type="date" name="data_inicio" class="u-full-width"></div>
+            </div>
         </div>
 
-        <label>Capacidade Funcional / Sintomas (Dispneia/Angina):</label>
-        <textarea name="capacidade" class="u-full-width"></textarea>
+        <!-- 2. HISTÓRICO CLÍNICO -->
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">2. Histórico Clínico</label>
+        <label>Doenças Cardiovasculares/Pulmonares prévias:</label>
+        <textarea name="doencas_previas" class="u-full-width" rows="2"></textarea>
+        
+        <label>Cirurgias Cardíacas/Torácicas:</label>
+        <input name="cirurgias" class="u-full-width">
+        
+        <div class="row">
+            <div class="col"><label>Comorbidades (HAS, DM...):</label><input name="comorbidades" class="u-full-width"></div>
+            <div class="col"><label>Histórico Familiar:</label><input name="hist_familiar" class="u-full-width"></div>
+        </div>
+        
+        <div class="row">
+            <div class="col"><label>Uso de Marcapasso/CDI?</label><select name="marcapasso" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+            <div class="col"><label>Medicações em uso:</label><input name="medicacoes" class="u-full-width"></div>
+        </div>
 
-        <label>Plano de Treino (Fase):</label>
-        <textarea name="plano" class="u-full-width"></textarea>
+        <!-- 3. FATORES DE RISCO -->
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">3. Fatores de Risco Cardiometabólicos</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background:#fff3cd; padding:10px; border-radius:5px;">
+            <label><input type="checkbox" name="fr_has" value="Sim"> Hipertensão Arterial</label>
+            <label><input type="checkbox" name="fr_dm" value="Sim"> Diabetes Mellitus</label>
+            <label><input type="checkbox" name="fr_tabagismo" value="Sim"> Tabagismo</label>
+            <label><input type="checkbox" name="fr_dislipidemia" value="Sim"> Dislipidemia</label>
+            <label><input type="checkbox" name="fr_sedentarismo" value="Sim"> Sedentarismo</label>
+            <label><input type="checkbox" name="fr_obesidade" value="Sim"> Obesidade</label>
+            <label><input type="checkbox" name="fr_stress" value="Sim"> Estresse</label>
+            <label><input type="checkbox" name="fr_alcool" value="Sim"> Álcool</label>
+        </div>
+
+        <!-- 4. AVALIAÇÃO CLÍNICA INICIAL -->
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">4. Avaliação Clínica Inicial</label>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="flex:1;"><label>FC Repouso:</label><input name="fc_repouso" class="u-full-width"></div>
+            <div style="flex:1;"><label>PA Repouso:</label><input name="pa_repouso" class="u-full-width"></div>
+            <div style="flex:1;"><label>SpO2:</label><input name="spo2_repouso" class="u-full-width"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>IMC:</label><input name="imc_cardio" class="u-full-width"></div>
+            <div class="col"><label>Classe Funcional (NYHA/GOLD):</label><input name="classe_funcional" class="u-full-width"></div>
+        </div>
+        <label>Limitações físicas relatadas:</label>
+        <textarea name="limitacoes" class="u-full-width"></textarea>
+
+        <!-- 5. TABELA DE TESTES -->
+        <h5 style="color:#dc3545; margin-top:20px; border-bottom:1px solid #eee;">5. Testes e Medidas</h5>
+        <table width="100%" style="font-size:0.85rem;">
+            <tr style="background:#eee;">
+                <th style="padding:5px;">Parâmetro</th>
+                <th style="padding:5px;">Resultado</th>
+                <th style="padding:5px;">Obs</th>
+            </tr>
+            <tr>
+                <td>TC6 (m)</td>
+                <td><input name="tc6_result" class="u-full-width"></td>
+                <td><input name="tc6_obs" class="u-full-width"></td>
+            </tr>
+            <tr>
+                <td>Borg (Esforço)</td>
+                <td><input name="borg_result" class="u-full-width"></td>
+                <td><input name="borg_obs" class="u-full-width"></td>
+            </tr>
+            <tr>
+                <td>METs (Capacidade)</td>
+                <td><input name="mets_result" class="u-full-width"></td>
+                <td><input name="mets_obs" class="u-full-width"></td>
+            </tr>
+            <tr>
+                <td>FC Máxima</td>
+                <td><input name="fcmax_result" class="u-full-width"></td>
+                <td><input name="fcmax_obs" class="u-full-width"></td>
+            </tr>
+            <tr>
+                <td>PA Pico Esforço</td>
+                <td><input name="pa_pico_result" class="u-full-width"></td>
+                <td><input name="pa_pico_obs" class="u-full-width"></td>
+            </tr>
+            <tr>
+                <td>Sat O2 Mínima</td>
+                <td><input name="sat_min_result" class="u-full-width"></td>
+                <td><input name="sat_min_obs" class="u-full-width"></td>
+            </tr>
+            <tr>
+                <td>Espirometria</td>
+                <td><input name="espiro_result" class="u-full-width"></td>
+                <td><input name="espiro_obs" class="u-full-width"></td>
+            </tr>
+        </table>
+
+        <!-- 6. OBJETIVOS E CONDUTA -->
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">6. Objetivos da Reabilitação</label>
+        <textarea name="objetivos" class="u-full-width" rows="3"></textarea>
+
+        <label style="font-weight:bold; color:#0056b3;">7. Plano de Tratamento / Conduta</label>
+        <div style="display: flex; gap: 10px; flex-wrap:wrap; margin-bottom:10px;">
+            <label><input type="checkbox" name="cond_aerobico" value="Sim"> Treino Aeróbico</label>
+            <label><input type="checkbox" name="cond_fortalecimento" value="Sim"> Fortalecimento</label>
+            <label><input type="checkbox" name="cond_respiratorio" value="Sim"> Treino Resp.</label>
+            <label><input type="checkbox" name="cond_educacao" value="Sim"> Educação em Saúde</label>
+        </div>
+        <textarea name="conduta_obs" class="u-full-width" placeholder="Detalhes da prescrição..."></textarea>
     `,
 
     "Uroginecologica": `

@@ -47,7 +47,7 @@ export async function renderProntuario() {
             <option value="NeuroAdulto">🧠 Ficha Neuro Adulto</option>
             <option value="NeuroPediatrica">👶 Ficha Neuro Pediátrica</option>
             <option value="Respiratoria">🫁 Ficha Respiratória</option>
-            <option value="Cardiovascular">❤️ Ficha Cardiovascular</option>
+            <option value="Cardiovascular">❤️ Ficha Reabilitação Cardiopulmonar e Metabólica</option>
             <option value="Uroginecologica">🚺 Ficha Uroginecológica</option>
             <option value="Dermatofuncional">💆‍♀️ Ficha Dermatofuncional</option>
             <option value="Esportiva">🏅 Ficha Esportiva</option>
