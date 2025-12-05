@@ -228,9 +228,27 @@ export const templates = {
         <h4 style="color:#dc3545; border-bottom:2px solid #dc3545; padding-bottom:5px; margin-bottom:15px;">Reabilitação Cardiopulmonar e Metabólica</h4>
 
         <div style="background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:15px;">
-            <label style="font-weight:bold; color:#333;">1. Identificação Clínica</label>
+            <label style="font-weight:bold; color:#333;">1. Identificação do Teste</label>
             <div class="row">
-                <div class="col"><label>Data:</label><input type="date" name="data_av" class="u-full-width"></div>
+                <div class="col">
+                    <label>Data:</label>
+                    <input type="date" name="data_av" class="u-full-width">
+                </div>
+                <div class="col">
+                    <label>Sequência / Nº Teste:</label>
+                    <select name="num_teste" class="u-full-width" style="font-weight:bold; color:#0056b3;">
+                        <option value="1">Teste 1 (Admissão)</option>
+                        <option value="2">Teste 2</option>
+                        <option value="3">Teste 3</option>
+                        <option value="4">Teste 4</option>
+                        <option value="5">Teste 5</option>
+                        <option value="Reavaliacao">Reavaliação</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col"><label>Leito / Setor:</label><input name="leito" class="u-full-width"></div>
                 <div class="col"><label>Diagnóstico:</label><input name="diag_clinico" class="u-full-width"></div>
             </div>
             <label>Histórico / Comorbidades:</label>
@@ -257,51 +275,30 @@ export const templates = {
             <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #ffeeba;">
                 <label style="font-weight:bold; color:#856404;">Condições do Teste</label>
                 <div class="row">
-                    <div class="col">
-                        <label>Usou Oxigênio?</label>
-                        <select name="tc6_uso_o2" class="u-full-width">
-                            <option value="Não">Não (Ar ambiente)</option>
-                            <option value="Sim">Sim</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label>Litragem (L/min)</label>
-                        <input name="tc6_litragem" type="number" step="0.5" class="u-full-width" placeholder="Ex: 2.0">
-                    </div>
-                    <div class="col">
-                        <label>Nº de Paradas</label>
-                        <input name="tc6_paradas" type="number" class="u-full-width" placeholder="0">
-                    </div>
+                    <div class="col"><label>O2?</label><select name="tc6_uso_o2" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+                    <div class="col"><label>Litragem</label><input name="tc6_litragem" type="number" step="0.5" class="u-full-width"></div>
+                    <div class="col"><label>Paradas</label><input name="tc6_paradas" type="number" class="u-full-width"></div>
                 </div>
             </div>
 
             <table width="100%" style="font-size:0.85rem; margin-bottom: 10px; background:white;">
                 <tr style="background:#e9ecef;"><th>Parâmetro</th><th>Repouso</th><th>6º Minuto</th></tr>
-                <tr><td>FC (bpm)</td><td><input name="tc6_fc_ini" class="u-full-width"></td><td><input name="tc6_fc_fim" class="u-full-width"></td></tr>
-                <tr><td>SpO2 (%)</td><td><input name="tc6_spo2_ini" class="u-full-width"></td><td><input name="tc6_spo2_fim" class="u-full-width"></td></tr>
-                <tr><td>Borg (Dispn.)</td><td><input name="tc6_borg_d_ini" class="u-full-width"></td><td><input name="tc6_borg_d_fim" class="u-full-width"></td></tr>
-                <tr><td>Borg (MMII)</td><td><input name="tc6_borg_m_ini" class="u-full-width"></td><td><input name="tc6_borg_m_fim" class="u-full-width"></td></tr>
-                <tr><td>PA (mmHg)</td><td><input name="tc6_pa_ini" class="u-full-width"></td><td><input name="tc6_pa_fim" class="u-full-width"></td></tr>
+                <tr><td>FC</td><td><input name="tc6_fc_ini" class="u-full-width"></td><td><input name="tc6_fc_fim" class="u-full-width"></td></tr>
+                <tr><td>SpO2</td><td><input name="tc6_spo2_ini" class="u-full-width"></td><td><input name="tc6_spo2_fim" class="u-full-width"></td></tr>
+                <tr><td>Borg (D)</td><td><input name="tc6_borg_d_ini" class="u-full-width"></td><td><input name="tc6_borg_d_fim" class="u-full-width"></td></tr>
+                <tr><td>Borg (M)</td><td><input name="tc6_borg_m_ini" class="u-full-width"></td><td><input name="tc6_borg_m_fim" class="u-full-width"></td></tr>
+                <tr><td>PA</td><td><input name="tc6_pa_ini" class="u-full-width"></td><td><input name="tc6_pa_fim" class="u-full-width"></td></tr>
             </table>
 
             <div style="background: #e7f1ff; padding: 10px; border-radius: 5px; border: 1px solid #b6d4fe;">
                 <div class="row">
-                    <div class="col">
-                        <label style="font-weight:bold; color: #0056b3;">Distância Percorrida (m)</label>
-                        <input type="number" id="tc6_distancia" name="tc6_distancia" class="u-full-width" style="border: 2px solid #0056b3;" oninput="window.calcularTC6()">
-                    </div>
-                    <div class="col">
-                        <label>Previsto (Enright):</label>
-                        <input type="text" id="tc6_previsto" name="tc6_previsto" class="u-full-width" readonly style="background: #eee; font-weight: bold;">
-                    </div>
-                    <div class="col">
-                        <label>% do Previsto:</label>
-                        <input type="text" id="tc6_porcentagem" name="tc6_porcentagem" class="u-full-width" readonly style="background: #d4edda; color: #155724; font-weight: bold;">
-                    </div>
+                    <div class="col"><label style="font-weight:bold; color: #0056b3;">Distância (m)</label><input type="number" id="tc6_distancia" name="tc6_distancia" class="u-full-width" style="border: 2px solid #0056b3;" oninput="window.calcularTC6()"></div>
+                    <div class="col"><label>Previsto:</label><input type="text" id="tc6_previsto" name="tc6_previsto" class="u-full-width" readonly style="background: #eee; font-weight: bold;"></div>
+                    <div class="col"><label>%:</label><input type="text" id="tc6_porcentagem" name="tc6_porcentagem" class="u-full-width" readonly style="background: #d4edda; color: #155724; font-weight: bold;"></div>
                 </div>
             </div>
             
-            <label style="margin-top: 10px;">Sintomas / Observações:</label>
+            <label style="margin-top: 10px;">Sintomas / Obs:</label>
             <textarea name="tc6_obs" class="u-full-width" rows="2"></textarea>
         </div>
 
