@@ -225,45 +225,127 @@ export const templates = {
     `,
 
     "Cardiovascular": `
-        <h4 style="color:#dc3545; border-bottom:2px solid #dc3545; padding-bottom:5px; margin-bottom:15px;">Reabilitação Cardiopulmonar e Metabólica</h4>
+        <h4 style="color:#dc3545; border-bottom:2px solid #dc3545; padding-bottom:5px; margin-bottom:15px;">Ficha de Avaliação Cardiopulmonar</h4>
 
-        <div style="background:#f8f9fa; padding:10px; border-radius:5px; margin-bottom:15px;">
-            <label style="font-weight:bold; color:#333;">1. Identificação do Teste</label>
+        <div style="background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #eee; margin-bottom:20px;">
+            <label style="font-weight:bold; color:#333; margin-bottom:10px;">1. Dados de Identificação</label>
             <div class="row">
-                <div class="col">
-                    <label>Data:</label>
-                    <input type="date" name="data_av" class="u-full-width">
-                </div>
-                <div class="col">
-                    <label>Sequência / Nº Teste:</label>
-                    <select name="num_teste" class="u-full-width" style="font-weight:bold; color:#0056b3;">
-                        <option value="1">Teste 1 (Admissão)</option>
-                        <option value="2">Teste 2</option>
-                        <option value="3">Teste 3</option>
-                        <option value="4">Teste 4</option>
-                        <option value="5">Teste 5</option>
-                        <option value="Reavaliacao">Reavaliação</option>
-                        <option value="Alta">Alta</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row">
+                <div class="col"><label>Data da Avaliação:</label><input type="date" name="data_av" class="u-full-width"></div>
                 <div class="col"><label>Leito / Setor:</label><input name="leito" class="u-full-width"></div>
-                <div class="col"><label>Diagnóstico:</label><input name="diag_clinico" class="u-full-width"></div>
             </div>
-            <label>Histórico / Comorbidades:</label>
-            <textarea name="historico" class="u-full-width" rows="2"></textarea>
+            <label>Diagnóstico Clínico:</label><input name="diag_clinico" class="u-full-width">
+            <div class="row">
+                <div class="col"><label>Encaminhado por:</label><input name="encaminhado" class="u-full-width"></div>
+                <div class="col"><label>Data Início Sintomas/Internação:</label><input type="date" name="data_inicio" class="u-full-width"></div>
+            </div>
+            <label>Profissão:</label><input name="profissao" class="u-full-width">
+            <label>Acompanhante:</label><input name="acompanhante" class="u-full-width">
         </div>
 
-        <label style="font-weight:bold; color:#dc3545;">2. Avaliação Basal</label>
-        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:20px;">
-            <div><label>FC (bpm)</label><input name="fc_rep" class="u-full-width"></div>
-            <div><label>PA (mmHg)</label><input name="pa_rep" class="u-full-width"></div>
-            <div><label>SpO2 (%)</label><input name="spo2_rep" class="u-full-width"></div>
+        <label style="font-weight:bold; color:#0056b3;">2. Queixa Principal</label>
+        <textarea name="qp" class="u-full-width" rows="2"></textarea>
+
+        <label style="font-weight:bold; color:#0056b3;">3. História da Doença Atual (HDA)</label>
+        <textarea name="hda" class="u-full-width" rows="3" placeholder="Início, fatores desencadeantes, progressão..."></textarea>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">4. Antecedentes Pessoais</label>
+        
+        <div style="background:#fff3cd; padding:10px; border-radius:5px; margin-bottom:10px;">
+            <strong style="color:#856404; font-size:0.8rem;">CARDÍACOS</strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <label><input type="checkbox" name="ant_has" value="Sim"> HAS</label>
+                <label><input type="checkbox" name="ant_coronaria" value="Sim"> D. Coronariana</label>
+                <label><input type="checkbox" name="ant_arritmia" value="Sim"> Arritmias</label>
+                <label><input type="checkbox" name="ant_ic" value="Sim"> Insuf. Cardíaca</label>
+            </div>
+            <div class="row" style="margin-top:5px;">
+                <div class="col"><label>IAM Prévio (Data):</label><input name="data_iam" class="u-full-width"></div>
+                <div class="col"><label>Cirurgias Cardíacas:</label><input name="cirur_cardio" class="u-full-width"></div>
+            </div>
         </div>
 
-        <div style="border: 2px solid #007bff; border-radius: 8px; padding: 15px; background-color: #f0f8ff;">
-            <h5 style="color: #0056b3; font-weight: bold; margin-bottom: 10px;">🚶 TC6 - Teste de Caminhada</h5>
+        <div style="background:#e2e3e5; padding:10px; border-radius:5px; margin-bottom:10px;">
+            <strong style="color:#383d41; font-size:0.8rem;">PULMONARES</strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <label><input type="checkbox" name="ant_asma" value="Sim"> Asma</label>
+                <label><input type="checkbox" name="ant_dpoc" value="Sim"> DPOC</label>
+                <label><input type="checkbox" name="ant_bronqui" value="Sim"> Bronquiectasias</label>
+                <label><input type="checkbox" name="ant_tb" value="Sim"> Tuberculose</label>
+            </div>
+        </div>
+
+        <div style="background:#d1e7dd; padding:10px; border-radius:5px;">
+            <strong style="color:#0f5132; font-size:0.8rem;">OUTROS / HÁBITOS</strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <label><input type="checkbox" name="ant_dm" value="Sim"> Diabetes</label>
+                <label><input type="checkbox" name="ant_obesidade" value="Sim"> Obesidade</label>
+            </div>
+            <label style="margin-top:5px;">Tabagismo:</label>
+            <select name="tabagismo" class="u-full-width"><option value="Nao">Não</option><option value="Atual">Atual</option><option value="Ex">Ex-Tabagista</option></select>
+            <input name="carga_tabagica" class="u-full-width" placeholder="Carga tabágica (maços/ano)">
+            <label>Etilismo:</label><input name="etilismo" class="u-full-width">
+        </div>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">5. Medicações em Uso</label>
+        <textarea name="medicacoes" class="u-full-width"></textarea>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">6. Exames Complementares</label>
+        <div class="row">
+            <div class="col"><label>ECG:</label><input name="ex_ecg" class="u-full-width"></div>
+            <div class="col"><label>Ecocardiograma:</label><input name="ex_eco" class="u-full-width"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>Teste Ergométrico:</label><input name="ex_ergo" class="u-full-width"></div>
+            <div class="col"><label>Espirometria:</label><input name="ex_espiro" class="u-full-width"></div>
+        </div>
+        <label>RX / TC Tórax:</label><input name="ex_imagem" class="u-full-width">
+
+        <label style="font-weight:bold; color:#dc3545; margin-top:15px;">7. Sinais Vitais (Repouso)</label>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+            <div><label>PA (mmHg)</label><input name="pa" class="u-full-width"></div>
+            <div><label>FC (bpm)</label><input name="fc" class="u-full-width"></div>
+            <div><label>FR (irpm)</label><input name="fr" class="u-full-width"></div>
+            <div><label>SpO2 (%)</label><input name="spo2" class="u-full-width"></div>
+            <div><label>Temp (°C)</label><input name="temp" class="u-full-width"></div>
+            <div><label>O2 (L/min)</label><input name="o2_basal" class="u-full-width" placeholder="Ar amb."></div>
+        </div>
+
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">8. Inspeção Geral</label>
+        <div style="display: flex; gap: 10px; flex-wrap:wrap;">
+            <label><input type="checkbox" name="insp_cianose" value="Sim"> Cianose</label>
+            <label><input type="checkbox" name="insp_edema" value="Sim"> Edema</label>
+            <label><input type="checkbox" name="insp_jugular" value="Sim"> Turgência Jugular</label>
+            <label><input type="checkbox" name="insp_musc" value="Sim"> Musc. Acessória</label>
+            <label><input type="checkbox" name="insp_ortopneia" value="Sim"> Ortopneia</label>
+        </div>
+        <label>Estado Geral:</label><input name="estado_geral" class="u-full-width">
+
+        <h5 style="color:#17a2b8; border-bottom:1px solid #eee; margin-top:20px;">9. Avaliação Respiratória</h5>
+        <div class="row">
+            <div class="col"><label>Tipo:</label><select name="tipo_resp" class="u-full-width"><option value="Misto">Misto</option><option value="Toracico">Torácico</option><option value="Abdominal">Abdominal</option></select></div>
+            <div class="col"><label>Ritmo:</label><input name="ritmo_resp" class="u-full-width"></div>
+        </div>
+        <label>Palpação (Expansibilidade / Frêmito):</label><input name="palpacao_torax" class="u-full-width">
+        <label>Percussão (Sons):</label><input name="percussao" class="u-full-width">
+        
+        <label style="font-weight:bold; margin-top:5px;">Ausculta:</label>
+        <div class="row">
+            <div class="col"><label>MV:</label><select name="mv" class="u-full-width"><option value="Presente">Presente</option><option value="Diminuido">Diminuído</option></select></div>
+            <div class="col"><label>Ruídos:</label><input name="ruidos_adv" class="u-full-width" placeholder="Sibilos, estertores..."></div>
+        </div>
+        <label>Secreção (Cor/Qtd/Visc):</label><input name="secrecao" class="u-full-width">
+
+        <h5 style="color:#dc3545; border-bottom:1px solid #eee; margin-top:20px;">10. Avaliação Cardiovascular</h5>
+        <label>Ausculta Cardíaca (Bulhas/Sopros):</label><input name="ausculta_cardio" class="u-full-width">
+        <div class="row">
+            <div class="col"><label>Perfusão Periférica:</label><input name="perfusao" class="u-full-width"></div>
+            <div class="col"><label>Pulsos:</label><input name="pulsos" class="u-full-width"></div>
+        </div>
+        <label>Dispneia mMRC (0-4):</label>
+        <select name="mmrc" class="u-full-width"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+
+        <div style="border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin-top: 20px; background-color: #f0f8ff;">
+            <h5 style="color: #0056b3; font-weight: bold; margin-bottom: 10px;">11. Teste de Caminhada (TC6)</h5>
             
             <div class="row" style="margin-bottom: 10px;">
                 <div class="col"><label>Sexo</label><select id="tc6_sexo" name="tc6_sexo" class="u-full-width" onchange="window.calcularTC6()"><option value="">Selecione...</option><option value="M">M</option><option value="F">F</option></select></div>
@@ -272,38 +354,55 @@ export const templates = {
                 <div class="col"><label>Peso (kg)</label><input type="number" id="tc6_peso" name="tc6_peso" class="u-full-width" oninput="window.calcularTC6()"></div>
             </div>
 
-            <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #ffeeba;">
-                <label style="font-weight:bold; color:#856404;">Condições do Teste</label>
-                <div class="row">
-                    <div class="col"><label>O2?</label><select name="tc6_uso_o2" class="u-full-width"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
-                    <div class="col"><label>Litragem</label><input name="tc6_litragem" type="number" step="0.5" class="u-full-width"></div>
-                    <div class="col"><label>Paradas</label><input name="tc6_paradas" type="number" class="u-full-width"></div>
-                </div>
-            </div>
-
             <table width="100%" style="font-size:0.85rem; margin-bottom: 10px; background:white;">
-                <tr style="background:#e9ecef;"><th>Parâmetro</th><th>Repouso</th><th>6º Minuto</th></tr>
+                <tr style="background:#e9ecef;"><th>Variável</th><th>Inicial</th><th>Final (6')</th></tr>
                 <tr><td>FC</td><td><input name="tc6_fc_ini" class="u-full-width"></td><td><input name="tc6_fc_fim" class="u-full-width"></td></tr>
                 <tr><td>SpO2</td><td><input name="tc6_spo2_ini" class="u-full-width"></td><td><input name="tc6_spo2_fim" class="u-full-width"></td></tr>
-                <tr><td>Borg (D)</td><td><input name="tc6_borg_d_ini" class="u-full-width"></td><td><input name="tc6_borg_d_fim" class="u-full-width"></td></tr>
-                <tr><td>Borg (M)</td><td><input name="tc6_borg_m_ini" class="u-full-width"></td><td><input name="tc6_borg_m_fim" class="u-full-width"></td></tr>
-                <tr><td>PA</td><td><input name="tc6_pa_ini" class="u-full-width"></td><td><input name="tc6_pa_fim" class="u-full-width"></td></tr>
+                <tr><td>Borg Dispneia</td><td><input name="tc6_borg_d_ini" class="u-full-width"></td><td><input name="tc6_borg_d_fim" class="u-full-width"></td></tr>
+                <tr><td>Borg Fadiga</td><td><input name="tc6_borg_m_ini" class="u-full-width"></td><td><input name="tc6_borg_m_fim" class="u-full-width"></td></tr>
             </table>
 
-            <div style="background: #e7f1ff; padding: 10px; border-radius: 5px; border: 1px solid #b6d4fe;">
+            <div style="background: #e7f1ff; padding: 10px; border-radius: 5px; border: 1px solid #b6d4fe; margin-bottom:10px;">
                 <div class="row">
                     <div class="col"><label style="font-weight:bold; color: #0056b3;">Distância (m)</label><input type="number" id="tc6_distancia" name="tc6_distancia" class="u-full-width" style="border: 2px solid #0056b3;" oninput="window.calcularTC6()"></div>
-                    <div class="col"><label>Previsto:</label><input type="text" id="tc6_previsto" name="tc6_previsto" class="u-full-width" readonly style="background: #eee; font-weight: bold;"></div>
-                    <div class="col"><label>%:</label><input type="text" id="tc6_porcentagem" name="tc6_porcentagem" class="u-full-width" readonly style="background: #d4edda; color: #155724; font-weight: bold;"></div>
-                </div>
+                    <div class="col"><label>% Previsto:</label><input type="text" id="tc6_porcentagem" name="tc6_porcentagem" class="u-full-width" readonly style="background: #d4edda; font-weight: bold;"></div>
+                    <input type="hidden" id="tc6_previsto" name="tc6_previsto"> </div>
+            </div>
+
+            <div class="row">
+                <div class="col"><label>Uso de O2 (L/min):</label><input name="tc6_o2" class="u-full-width"></div>
+                <div class="col"><label>Nº de Paradas:</label><input name="tc6_paradas" class="u-full-width"></div>
+                <div class="col"><label>SpO2 Mínima:</label><input name="tc6_spo2_min" class="u-full-width"></div>
             </div>
             
-            <label style="margin-top: 10px;">Sintomas / Obs:</label>
-            <textarea name="tc6_obs" class="u-full-width" rows="2"></textarea>
+            <label style="margin-top:10px; font-weight:bold;">Força Muscular Respiratória:</label>
+            <div class="row">
+                <div class="col"><label>Pimáx:</label><input name="pimax" class="u-full-width" placeholder="cmH2O"></div>
+                <div class="col"><label>Pemáx:</label><input name="pemax" class="u-full-width" placeholder="cmH2O"></div>
+            </div>
         </div>
 
-        <label style="font-weight:bold; color:#dc3545; margin-top:15px;">4. Plano de Tratamento</label>
-        <textarea name="conduta" class="u-full-width" rows="3"></textarea>
+        <label style="font-weight:bold; color:#0056b3; margin-top:15px;">12. Diagnóstico Fisioterapêutico</label>
+        <textarea name="diagnostico_fisio" class="u-full-width"></textarea>
+
+        <label style="font-weight:bold; color:#0056b3;">13. Objetivos (Curto/Médio/Longo)</label>
+        <textarea name="objetivos" class="u-full-width"></textarea>
+
+        <label style="font-weight:bold; color:#0056b3;">14. Plano de Tratamento</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+            <label><input type="checkbox" name="cond_aerobio" value="Sim"> Treino Aeróbio</label>
+            <label><input type="checkbox" name="cond_forca" value="Sim"> Força Periférica</label>
+            <label><input type="checkbox" name="cond_tmi" value="Sim"> TMI (Respiratório)</label>
+            <label><input type="checkbox" name="cond_higiene" value="Sim"> Higiene Brônquica</label>
+            <label><input type="checkbox" name="cond_expansao" value="Sim"> Expansão Pulmonar</label>
+            <label><input type="checkbox" name="cond_educacao" value="Sim"> Educação em Saúde</label>
+        </div>
+        <div class="row">
+            <div class="col"><label>Frequência Semanal:</label><input name="freq_semanal" class="u-full-width"></div>
+        </div>
+
+        <label style="font-weight:bold; color:#0056b3;">15. Observações Gerais</label>
+        <textarea name="obs_gerais" class="u-full-width"></textarea>
     `,
 
     "Uroginecologica": `
