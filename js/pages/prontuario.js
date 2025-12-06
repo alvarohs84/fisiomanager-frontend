@@ -49,7 +49,6 @@ export async function renderProntuario() {
           <select id="selTipoRegistro" style="width: 100%; margin-bottom: 10px; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
             <option value="Evolucao">📝 Evolução Diária (Sessão)</option>
             <option value="Ortopedica">🦴 Ficha Ortopédica</option>
-            <option value="Cardiovascular">❤️ Reabilitação Cardiopulmonar</option>
             <option value="NeuroAdulto">🧠 Ficha Neuro Adulto</option>
             <option value="NeuroPediatrica">👶 Ficha Neuro Pediátrica</option>
             <option value="Respiratoria">🫁 Ficha Respiratória</option>
