@@ -85,7 +85,7 @@ export const templates = {
     `,
 
 "Respiratoria e Reabilitação Cardiopulmonar": `
-        <h4 style="color:#17a2b8; border-bottom:2px solid #17a2b8; padding-bottom:5px; margin-bottom:15px;">Protocolo de Reabilitação Pulmonar</h4>
+        <h4 style="color:#17a2b8; border-bottom:2px solid #17a2b8; padding-bottom:5px; margin-bottom:15px;">Triagem para Reabilitação Pulmonar</h4>
         
         <div class="tab-container">
             <div class="tab-btn active" onclick="window.mudarAba(1)">1. História</div>
